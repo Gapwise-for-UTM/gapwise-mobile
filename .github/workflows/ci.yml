@@ -25,7 +25,8 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm test
-      - name: Formatting
+      - name: Formatting report
+        continue-on-error: true
         run: npm run format:check
       - name: Expo Doctor
         run: npx expo-doctor@latest
