@@ -5,14 +5,18 @@ import { useGapwiseTheme } from "@/src/theme";
 export function PrimaryButton({
   label,
   onPress,
+  disabled = false,
 }: {
   label: string;
   onPress: () => void;
+  disabled?: boolean;
 }) {
   const theme = useGapwiseTheme();
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={() => {
         void Haptics.selectionAsync().catch(() => undefined);
         onPress();
@@ -21,7 +25,7 @@ export function PrimaryButton({
         styles.button,
         {
           backgroundColor: pressed ? theme.bluePressed : theme.blue,
-          opacity: pressed ? 0.92 : 1,
+          opacity: disabled ? 0.5 : pressed ? 0.92 : 1,
         },
       ]}
     >
