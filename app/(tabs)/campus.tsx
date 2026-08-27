@@ -314,7 +314,12 @@ const styles = StyleSheet.create({
   body: { fontSize: 15, lineHeight: 22 },
   meta: { marginTop: 10, fontSize: 12, fontWeight: "700" },
   notice: { marginTop: 10, fontSize: 13, lineHeight: 19, fontWeight: "600" },
-  selectorHint: { marginTop: 10, fontSize: 12, lineHeight: 18, fontWeight: "700" },
+  selectorHint: {
+    marginTop: 10,
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "700",
+  },
   input: {
     borderWidth: 1,
     borderRadius: 12,
