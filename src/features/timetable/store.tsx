@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { gapsForMeetings, SAMPLE_MEETINGS, type Gap, type Meeting, type Term } from './model';
 
@@ -34,20 +34,28 @@ export function TimetableProvider({ children }: PropsWithChildren) {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [activeTerm, setActiveTermState] = useState<Term>('Fall');
   const [hydrated, setHydrated] = useState(false);
+  const [persistenceEnabled, setPersistenceEnabled] = useState(false);
   const [persistenceError, setPersistenceError] = useState<string | null>(null);
+  const userChangedAfterRestoreFailure = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     void SecureStore.getItemAsync(STORAGE_KEY)
       .then((raw) => {
-        if (!raw || cancelled) return;
-        const parsed: unknown = JSON.parse(raw);
-        if (!isPersistedTimetable(parsed)) throw new Error('Saved timetable schema is unsupported.');
-        setMeetings(parsed.meetings);
-        setActiveTermState(parsed.activeTerm);
+        if (cancelled) return;
+        if (raw) {
+          const parsed: unknown = JSON.parse(raw);
+          if (!isPersistedTimetable(parsed)) throw new Error('Saved timetable schema is unsupported.');
+          setMeetings(parsed.meetings);
+          setActiveTermState(parsed.activeTerm);
+        }
+        setPersistenceEnabled(true);
       })
       .catch(() => {
-        if (!cancelled) setPersistenceError('Saved timetable could not be restored. Your current session is still usable.');
+        if (!cancelled) {
+          setPersistenceEnabled(false);
+          setPersistenceError('Saved timetable could not be restored. Gapwise will not overwrite it unless you make a new timetable change.');
+        }
       })
       .finally(() => {
         if (!cancelled) setHydrated(true);
@@ -58,22 +66,40 @@ export function TimetableProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !persistenceEnabled) return;
     const payload: PersistedTimetable = { version: STORAGE_VERSION, meetings, activeTerm };
     void SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(payload), {
       keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     })
       .then(() => setPersistenceError(null))
       .catch(() => setPersistenceError('Changes are visible now but could not be saved on this device.'));
-  }, [activeTerm, hydrated, meetings]);
+  }, [activeTerm, hydrated, meetings, persistenceEnabled]);
+
+  const enablePersistenceForExplicitChange = useCallback(() => {
+    if (!persistenceEnabled && hydrated) {
+      userChangedAfterRestoreFailure.current = true;
+      setPersistenceEnabled(true);
+    }
+  }, [hydrated, persistenceEnabled]);
 
   const loadSample = useCallback(() => {
+    enablePersistenceForExplicitChange();
     setMeetings(SAMPLE_MEETINGS);
     setActiveTermState('Fall');
-  }, []);
+  }, [enablePersistenceForExplicitChange]);
 
-  const clear = useCallback(() => setMeetings([]), []);
-  const setActiveTerm = useCallback((term: Term) => setActiveTermState(term), []);
+  const clear = useCallback(() => {
+    enablePersistenceForExplicitChange();
+    setMeetings([]);
+  }, [enablePersistenceForExplicitChange]);
+
+  const setActiveTerm = useCallback(
+    (term: Term) => {
+      enablePersistenceForExplicitChange();
+      setActiveTermState(term);
+    },
+    [enablePersistenceForExplicitChange],
+  );
 
   const value = useMemo<TimetableState>(
     () => ({
