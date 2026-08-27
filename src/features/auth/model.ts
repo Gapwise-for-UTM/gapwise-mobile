@@ -26,9 +26,7 @@ export function accountSwitchRequiresIsolation(
   previousUserId: string | null,
   nextUserId: string | null,
 ) {
-  return Boolean(
-    previousUserId && nextUserId && previousUserId !== nextUserId,
-  );
+  return Boolean(previousUserId && nextUserId && previousUserId !== nextUserId);
 }
 
 export function authFailureMessage(

@@ -68,7 +68,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       const refreshed = await refreshSession(stored.refreshToken);
       await installSession(refreshed);
     } catch (error) {
-      const revoked = error instanceof Error && /revoked|401/i.test(error.message);
+      const revoked =
+        error instanceof Error && /revoked|401/i.test(error.message);
       if (revoked) await clearStoredSession().catch(() => undefined);
       setState({
         status: "guest",
@@ -99,8 +100,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     void restoreStored();
-    const subscription = Linking.addEventListener("url", ({ url }) =>
-      void handleUrl(url),
+    const subscription = Linking.addEventListener(
+      "url",
+      ({ url }) => void handleUrl(url),
     );
     void Linking.getInitialURL().then((url) => {
       if (url) void handleUrl(url);
@@ -137,7 +139,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       status: "guest",
       message: "Signed out. Local timetable data remains on this device.",
     });
-    if (session) await revokeSession(session.accessToken).catch(() => undefined);
+    if (session)
+      await revokeSession(session.accessToken).catch(() => undefined);
   }, [state]);
 
   const dismissMessage = useCallback(() => {

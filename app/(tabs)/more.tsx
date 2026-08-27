@@ -65,7 +65,10 @@ export default function MoreScreen() {
               tokens stay in platform secure storage. Signing out does not erase
               this device’s local timetable.
             </Text>
-            <PrimaryButton label="Sign out" onPress={() => void auth.signOut()} />
+            <PrimaryButton
+              label="Sign out"
+              onPress={() => void auth.signOut()}
+            />
           </>
         ) : (
           <>

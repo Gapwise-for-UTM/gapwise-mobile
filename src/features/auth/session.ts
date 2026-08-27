@@ -34,7 +34,10 @@ export async function readStoredSession(): Promise<AuthSession | null> {
     throw new Error("Stored auth session is malformed.");
   }
   const candidate = parsed as Partial<StoredSession>;
-  if (candidate.version !== SESSION_VERSION || !validSession(candidate.session)) {
+  if (
+    candidate.version !== SESSION_VERSION ||
+    !validSession(candidate.session)
+  ) {
     throw new Error("Stored auth session is unsupported.");
   }
   return candidate.session;
