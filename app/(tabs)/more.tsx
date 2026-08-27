@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
   body: { fontSize: 15, lineHeight: 23 },
   links: { gap: 8 },
   row: { minHeight: 54, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 4 },
-  rowText: { fontSize: 16, fontWeight: '650' },
+  rowText: { fontSize: 16, fontWeight: '600' },
   chevron: { fontSize: 28, lineHeight: 28 },
 });

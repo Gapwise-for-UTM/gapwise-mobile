@@ -29,8 +29,8 @@ export default function TodayScreen() {
 
 const styles = StyleSheet.create({
   hero: { gap: 8, paddingVertical: 10 },
-  kicker: { fontSize: 16, fontWeight: '650' },
-  headline: { fontSize: 34, lineHeight: 40, fontWeight: '850', letterSpacing: -1.1 },
+  kicker: { fontSize: 16, fontWeight: '600' },
+  headline: { fontSize: 34, lineHeight: 40, fontWeight: '800', letterSpacing: -1.1 },
   body: { fontSize: 15, lineHeight: 23 },
   small: { fontSize: 14, lineHeight: 20 },
   grid: { flexDirection: 'row', gap: 12, alignItems: 'stretch' },

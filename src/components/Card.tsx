@@ -20,5 +20,5 @@ export function Card({
 const styles = StyleSheet.create({
   card: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 22, padding: 18, gap: 10 },
   label: { fontSize: 11, letterSpacing: 1.5, fontWeight: '800' },
-  title: { fontSize: 20, lineHeight: 25, fontWeight: '750', letterSpacing: -0.3 },
+  title: { fontSize: 20, lineHeight: 25, fontWeight: '700', letterSpacing: -0.3 },
 });
