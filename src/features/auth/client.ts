@@ -112,7 +112,12 @@ export async function refreshSession(
     },
   );
   const body = (await readJson(response)) as Record<string, unknown> | null;
-  if (!response.ok || !body) throw new Error("Session refresh failed.");
+  if (!response.ok || !body) {
+    if (response.status === 400 || response.status === 401) {
+      throw new Error("Session revoked.");
+    }
+    throw new Error("Session refresh failed.");
+  }
   const accessToken = body["access_token"];
   const nextRefresh = body["refresh_token"];
   const expiresIn = Number(body["expires_in"] ?? 0);
