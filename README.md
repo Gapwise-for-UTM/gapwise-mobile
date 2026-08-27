@@ -151,13 +151,15 @@ Physical-device QA is performed separately from static CI. The app includes non-
 
 ---
 
-## Ecosystem
+## Gapwise ecosystem
 
-Gapwise Mobile is one surface of the larger Gapwise ecosystem:
+The first-party repositories are separate deployment surfaces with one product identity, trust model, and source-of-truth hierarchy:
 
-- **[`gapwise`](https://github.com/andrewmuratov/gapwise)** — primary web/PWA product and deterministic UTM truth;
-- **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** — native iOS and Android client;
-- **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** — permissioned AI/MCP service;
-- **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** — developer and platform documentation.
+| Repository | Role | Primary surface |
+| --- | --- | --- |
+| **[`gapwise`](https://github.com/andrewmuratov/gapwise)** | Core web/PWA product, canonical student-state behavior, deterministic UTM campus intelligence, public API, OpenAPI contract, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
+| **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** | Native iOS and Android client consuming canonical Gapwise contracts and product semantics | Native mobile app |
+| **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** | Permissioned OAuth/MCP layer for explicitly delegated student context and bounded AI actions | [ai.gapwise.ca](https://ai.gapwise.ca/api/mcp) |
+| **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** | Public developer documentation for the API, SDKs, platform behavior, and AI/MCP integration | [docs.gapwise.ca](https://docs.gapwise.ca) |
 
-The repositories are separate deployment surfaces, but they should present one coherent product, brand, trust model, and source of truth.
+`gapwise` remains authoritative for deterministic timetable, gap, campus, routing, and primary student-state semantics. Mobile and AI consume those contracts rather than reimplementing them, while `gapwise-docs` documents the released public surfaces. All four repositories should keep branding, trust boundaries, terminology, and cross-links consistent.
