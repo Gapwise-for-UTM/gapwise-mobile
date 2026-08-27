@@ -25,12 +25,7 @@ export function decryptJsonRecord(
   record: EncryptedRecord,
   additionalDataUtf8: string,
 ): string {
-  return native.decryptJsonRecord(
-    handle,
-    record.ciphertext,
-    record.nonce,
-    additionalDataUtf8,
-  );
+  return native.decryptJsonRecord(handle, record.ciphertext, record.nonce, additionalDataUtf8);
 }
 
 export function encryptJsonRecord(
