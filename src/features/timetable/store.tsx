@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { gapsForMeetings, SAMPLE_MEETINGS, type Gap, type Meeting, type Term } from './model';
 
@@ -36,7 +36,6 @@ export function TimetableProvider({ children }: PropsWithChildren) {
   const [hydrated, setHydrated] = useState(false);
   const [persistenceEnabled, setPersistenceEnabled] = useState(false);
   const [persistenceError, setPersistenceError] = useState<string | null>(null);
-  const userChangedAfterRestoreFailure = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,10 +75,7 @@ export function TimetableProvider({ children }: PropsWithChildren) {
   }, [activeTerm, hydrated, meetings, persistenceEnabled]);
 
   const enablePersistenceForExplicitChange = useCallback(() => {
-    if (!persistenceEnabled && hydrated) {
-      userChangedAfterRestoreFailure.current = true;
-      setPersistenceEnabled(true);
-    }
+    if (!persistenceEnabled && hydrated) setPersistenceEnabled(true);
   }, [hydrated, persistenceEnabled]);
 
   const loadSample = useCallback(() => {
