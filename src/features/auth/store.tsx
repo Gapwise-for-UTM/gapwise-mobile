@@ -10,13 +10,12 @@ import {
 import * as Linking from "expo-linking";
 import { getPublicSupabaseConfig } from "./config";
 import {
-  isAuthCallbackUrl,
   refreshSession,
   requestMagicLink as sendMagicLink,
   revokeSession,
   sessionFromCallback,
 } from "./client";
-import { authFailureMessage } from "./model";
+import { authFailureMessage, isAuthCallbackUrl } from "./model";
 import {
   clearStoredSession,
   readStoredSession,
@@ -34,6 +33,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 const REFRESH_SKEW_MS = 60_000;
+const AUTH_CALLBACK_URL = "gapwise://auth/callback";
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const configured = Boolean(getPublicSupabaseConfig());
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const handleUrl = useCallback(
     async (url: string) => {
-      if (!isAuthCallbackUrl(url)) return;
+      if (!isAuthCallbackUrl(url, AUTH_CALLBACK_URL)) return;
       setState({ status: "restoring", message: null });
       try {
         const session = await sessionFromCallback(url);
