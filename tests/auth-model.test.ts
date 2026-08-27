@@ -9,7 +9,10 @@ import {
 
 test("empty cloud state preserves recoverable local timetable", () => {
   const input = { localHasTimetable: true, cloudOutcome: "empty" as const };
-  assert.deepEqual(chooseRestoration(input), { kind: "local", hasCloudState: false });
+  assert.deepEqual(chooseRestoration(input), {
+    kind: "local",
+    hasCloudState: false,
+  });
   assert.equal(shouldReplaceLocalTimetable(input), false);
 });
 
@@ -23,7 +26,10 @@ test("failed and interrupted restore never replace local state", () => {
 });
 
 test("authoritative available cloud state is the only replacement case", () => {
-  const input = { localHasTimetable: true, cloudOutcome: "available" as const };
+  const input = {
+    localHasTimetable: true,
+    cloudOutcome: "available" as const,
+  };
   assert.equal(chooseRestoration(input).kind, "cloud");
   assert.equal(shouldReplaceLocalTimetable(input), true);
 });
