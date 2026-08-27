@@ -36,7 +36,10 @@ const REFRESH_SKEW_MS = 60_000;
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const configured = Boolean(getPublicSupabaseConfig());
-  const [state, setState] = useState<AuthState>({ status: "restoring", message: null });
+  const [state, setState] = useState<AuthState>({
+    status: "restoring",
+    message: null,
+  });
 
   const installSession = useCallback(async (session: AuthSession) => {
     await writeStoredSession(session);
@@ -53,7 +56,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (!configured) {
         setState({
           status: "guest",
-          message: "Account sign-in is not configured in this build. Your local timetable is unchanged.",
+          message:
+            "Account sign-in is not configured in this build. Your local timetable is unchanged.",
         });
         return;
       }
@@ -68,7 +72,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (revoked) await clearStoredSession().catch(() => undefined);
       setState({
         status: "guest",
-        message: revoked ? authFailureMessage("revoked") : authFailureMessage("restore"),
+        message: revoked
+          ? authFailureMessage("revoked")
+          : authFailureMessage("restore"),
       });
     }
   }, [configured, installSession]);
@@ -93,7 +99,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     void restoreStored();
-    const subscription = Linking.addEventListener("url", ({ url }) => void handleUrl(url));
+    const subscription = Linking.addEventListener("url", ({ url }) =>
+      void handleUrl(url),
+    );
     void Linking.getInitialURL().then((url) => {
       if (url) void handleUrl(url);
     });
@@ -125,13 +133,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const signOut = useCallback(async () => {
     const session = state.status === "authenticated" ? state.session : null;
     await clearStoredSession();
-    setState({ status: "guest", message: "Signed out. Local timetable data remains on this device." });
+    setState({
+      status: "guest",
+      message: "Signed out. Local timetable data remains on this device.",
+    });
     if (session) await revokeSession(session.accessToken).catch(() => undefined);
   }, [state]);
 
   const dismissMessage = useCallback(() => {
     setState((current) =>
-      current.status === "error" ? { status: "guest", message: null } : { ...current, message: null },
+      current.status === "error"
+        ? { status: "guest", message: null }
+        : { ...current, message: null },
     );
   }, []);
 
