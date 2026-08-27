@@ -43,7 +43,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function exactKeys(value: Record<string, unknown>, expected: readonly string[]) {
+function exactKeys(
+  value: Record<string, unknown>,
+  expected: readonly string[],
+) {
   const actual = Object.keys(value).sort();
   const wanted = [...expected].sort();
   return (
@@ -67,7 +70,8 @@ function requirePositiveInteger(value: unknown, name: string): number {
 }
 
 function decodeBase64UrlLength(value: string): number {
-  if (!BASE64URL_PATTERN.test(value)) throw new Error("Malformed base64url value.");
+  if (!BASE64URL_PATTERN.test(value))
+    throw new Error("Malformed base64url value.");
   const remainder = value.length % 4;
   if (remainder === 1) throw new Error("Malformed base64url value.");
   const padding = remainder === 0 ? 0 : 4 - remainder;
@@ -125,8 +129,14 @@ export function parseEncryptedPrivateRow(
   const subjectId = requireUuid(row.subject_id, "subject ID");
   const recordId = requireUuid(row.record_id, "record ID");
   const keyId = requireUuid(row.key_id, "key ID");
-  const cryptoVersion = requirePositiveInteger(row.crypto_version, "crypto version");
-  const schemaVersion = requirePositiveInteger(row.schema_version, "schema version");
+  const cryptoVersion = requirePositiveInteger(
+    row.crypto_version,
+    "crypto version",
+  );
+  const schemaVersion = requirePositiveInteger(
+    row.schema_version,
+    "schema version",
+  );
   const revision = requirePositiveInteger(row.revision, "revision");
   if (
     userId !== expectedUserId ||
@@ -137,7 +147,10 @@ export function parseEncryptedPrivateRow(
   ) {
     throw new Error("Encrypted private data context mismatch.");
   }
-  if (typeof row.updated_at !== "string" || !Number.isFinite(Date.parse(row.updated_at))) {
+  if (
+    typeof row.updated_at !== "string" ||
+    !Number.isFinite(Date.parse(row.updated_at))
+  ) {
     throw new Error("Encrypted private data timestamp is malformed.");
   }
   if (typeof row.ciphertext !== "string" || typeof row.nonce !== "string") {
@@ -182,7 +195,10 @@ export function byteaHexToBase64Url(
     throw new Error("Encrypted bytea value is malformed.");
   }
   const byteLength = hex.length / 2;
-  if ((exact && byteLength !== maximumBytes) || (!exact && byteLength > maximumBytes)) {
+  if (
+    (exact && byteLength !== maximumBytes) ||
+    (!exact && byteLength > maximumBytes)
+  ) {
     throw new Error("Encrypted bytea value has an invalid length.");
   }
   const bytes = new Uint8Array(byteLength);
@@ -253,7 +269,10 @@ export function parsePrivateSchedulePayload(plaintext: string): Meeting[] {
   } catch {
     throw new Error("Decrypted private data is malformed.");
   }
-  if (!isRecord(value) || !PRIVATE_DATA_SCHEMA_VERSIONS.has(Number(value.schemaVersion))) {
+  if (
+    !isRecord(value) ||
+    !PRIVATE_DATA_SCHEMA_VERSIONS.has(Number(value.schemaVersion))
+  ) {
     throw new Error("Decrypted private data schema is unsupported.");
   }
   if (!Array.isArray(value.schedule) || value.schedule.length > 2_000) {

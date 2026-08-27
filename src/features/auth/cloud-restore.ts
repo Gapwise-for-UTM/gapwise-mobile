@@ -21,8 +21,7 @@ const MAX_ROW_BYTES = 512 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 
 type CloudRestoreResult =
-  | { kind: "empty" }
-  | { kind: "cloud"; meetings: Meeting[]; updatedAt: string };
+  { kind: "empty" } | { kind: "cloud"; meetings: Meeting[]; updatedAt: string };
 
 function apiOrigin() {
   const configured = process.env.EXPO_PUBLIC_GAPWISE_API_URL?.trim();
@@ -125,7 +124,8 @@ async function loadPrivateRow(
   );
   const body = await readBoundedJson(response, MAX_ROW_BYTES);
   if (!response.ok) throw new Error("Encrypted cloud data is unavailable.");
-  if (!Array.isArray(body)) throw new Error("Encrypted cloud response is malformed.");
+  if (!Array.isArray(body))
+    throw new Error("Encrypted cloud response is malformed.");
   if (body.length === 0) return null;
   if (body.length !== 1) throw new Error("Encrypted cloud state is ambiguous.");
   return body[0];

@@ -94,11 +94,7 @@ test("rejects malformed nonce and unsupported crypto metadata", () => {
     parseEncryptedPrivateRow(row({ nonce: "\\x0011" }), USER_ID, bundle()),
   );
   assert.throws(() =>
-    parseEncryptedPrivateRow(
-      row({ crypto_version: 2 }),
-      USER_ID,
-      bundle(),
-    ),
+    parseEncryptedPrivateRow(row({ crypto_version: 2 }), USER_ID, bundle()),
   );
 });
 

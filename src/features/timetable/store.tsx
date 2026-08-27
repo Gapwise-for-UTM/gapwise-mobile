@@ -128,7 +128,9 @@ export function TimetableProvider({ children }: PropsWithChildren) {
   const replaceFromCloud = useCallback(
     (restoredMeetings: Meeting[]) => {
       if (!hydrated) {
-        throw new Error("Local timetable hydration must finish before cloud restore.");
+        throw new Error(
+          "Local timetable hydration must finish before cloud restore.",
+        );
       }
       // Cloud data reaches this boundary only after the complete encrypted row has
       // authenticated and parsed. No partial or failed restore can mutate local state.
