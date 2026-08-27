@@ -146,13 +146,21 @@ export default function CampusScreen() {
           </Text>
         ) : null}
         {message ? (
-          <Text accessibilityRole="alert" style={[styles.notice, { color: theme.text }]}>
+          <Text
+            accessibilityRole="alert"
+            style={[styles.notice, { color: theme.text }]}
+          >
             {message}
           </Text>
         ) : null}
-        {loadState === "loading" ? <ActivityIndicator accessibilityLabel="Loading campus data" /> : null}
+        {loadState === "loading" ? (
+          <ActivityIndicator accessibilityLabel="Loading campus data" />
+        ) : null}
         {loadState === "error" ? (
-          <PrimaryButton label="Retry campus data" onPress={() => void loadCampus()} />
+          <PrimaryButton
+            label="Retry campus data"
+            onPress={() => void loadCampus()}
+          />
         ) : null}
       </Card>
 
@@ -184,11 +192,18 @@ export default function CampusScreen() {
               }}
               style={[
                 styles.buildingChip,
-                { borderColor: theme.border, backgroundColor: theme.background },
+                {
+                  borderColor: theme.border,
+                  backgroundColor: theme.background,
+                },
               ]}
             >
-              <Text style={[styles.code, { color: theme.blue }]}>{building.code}</Text>
-              <Text style={[styles.name, { color: theme.text }]}>{building.name}</Text>
+              <Text style={[styles.code, { color: theme.blue }]}>
+                {building.code}
+              </Text>
+              <Text style={[styles.name, { color: theme.text }]}>
+                {building.name}
+              </Text>
               <Text style={[styles.small, { color: theme.textMuted }]}>
                 {buildingSummary(building)}
               </Text>
@@ -199,18 +214,28 @@ export default function CampusScreen() {
           ))}
         </View>
         {snapshot && buildings.length === 0 && places.length === 0 ? (
-          <Text style={[styles.body, { color: theme.textMuted }]}>No canonical campus result matches that search.</Text>
+          <Text style={[styles.body, { color: theme.textMuted }]}>
+            No canonical campus result matches that search.
+          </Text>
         ) : null}
         {places.map((place) => (
-          <View key={place.id} style={[styles.placeRow, { borderTopColor: theme.border }]}>
-            <Text style={[styles.name, { color: theme.text }]}>{place.name}</Text>
+          <View
+            key={place.id}
+            style={[styles.placeRow, { borderTopColor: theme.border }]}
+          >
+            <Text style={[styles.name, { color: theme.text }]}>
+              {place.name}
+            </Text>
             <Text style={[styles.small, { color: theme.textMuted }]}>
               {place.kind} · {place.buildingCode}
               {place.floorOrRoom ? ` · ${place.floorOrRoom}` : ""}
             </Text>
-            <Text style={[styles.small, { color: theme.textMuted }]}>{place.summary}</Text>
             <Text style={[styles.small, { color: theme.textMuted }]}>
-              Availability: {place.availability.state} · evidence {place.availability.freshness}
+              {place.summary}
+            </Text>
+            <Text style={[styles.small, { color: theme.textMuted }]}>
+              Availability: {place.availability.state} · evidence{" "}
+              {place.availability.freshness}
             </Text>
           </View>
         ))}
@@ -218,9 +243,10 @@ export default function CampusScreen() {
 
       <Card label="ROUTE" title={`${from} → ${to}`}>
         <Text style={[styles.body, { color: theme.textMuted }]}>
-          Tap a building above to change the route origin. Tap the selected origin
-          again to set a destination. Route results are textual first so the same
-          uncertainty is available to screen-reader users without relying on a map.
+          Tap a building above to change the route origin. Tap the selected
+          origin again to set a destination. Route results are textual first so
+          the same uncertainty is available to screen-reader users without
+          relying on a map.
         </Text>
         <View style={styles.routeActions}>
           <PrimaryButton
@@ -246,7 +272,10 @@ export default function CampusScreen() {
               </Text>
             ) : null}
             {route.warnings.map((warning) => (
-              <Text key={warning} style={[styles.warning, { color: theme.text }]}>
+              <Text
+                key={warning}
+                style={[styles.warning, { color: theme.text }]}
+              >
                 • {warning}
               </Text>
             ))}
@@ -256,9 +285,10 @@ export default function CampusScreen() {
 
       <Card label="PRIVACY" title="No background location required">
         <Text style={[styles.body, { color: theme.textMuted }]}>
-          Campus browsing and building-to-building routing do not send a timetable,
-          account, friend graph, or precise live location to the public campus API.
-          This phase does not request background location permission.
+          Campus browsing and building-to-building routing do not send a
+          timetable, account, friend graph, or precise live location to the
+          public campus API. This phase does not request background location
+          permission.
         </Text>
       </Card>
     </Screen>
@@ -278,11 +308,20 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   chips: { gap: 10, marginTop: 12 },
-  buildingChip: { borderWidth: 1, borderRadius: 14, padding: 13, minHeight: 64 },
+  buildingChip: {
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 13,
+    minHeight: 64,
+  },
   code: { fontSize: 12, fontWeight: "900", letterSpacing: 1.2 },
   name: { fontSize: 15, fontWeight: "800", marginTop: 2 },
   small: { fontSize: 12, lineHeight: 17, marginTop: 3 },
-  placeRow: { borderTopWidth: StyleSheet.hairlineWidth, paddingTop: 12, marginTop: 12 },
+  placeRow: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: 12,
+    marginTop: 12,
+  },
   routeActions: { marginTop: 12 },
   routeResult: { marginTop: 14, gap: 5 },
   routeTitle: { fontSize: 17, fontWeight: "800" },

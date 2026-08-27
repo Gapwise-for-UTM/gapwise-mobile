@@ -69,7 +69,8 @@ export function snapshotFreshnessLabel(
   now: Date = new Date(),
 ): string {
   const hours = snapshotAgeHours(snapshot.fetchedAt, now);
-  if (hours < 1) return `Campus data ${snapshot.dataVersion} · refreshed recently`;
+  if (hours < 1)
+    return `Campus data ${snapshot.dataVersion} · refreshed recently`;
   if (hours < 24)
     return `Campus data ${snapshot.dataVersion} · cached ${Math.floor(hours)}h ago`;
   return `Campus data ${snapshot.dataVersion} · cached ${Math.floor(hours / 24)}d ago`;

@@ -10,10 +10,7 @@ import {
   snapshotFreshnessLabel,
   splitForSecureStore,
 } from "../src/features/campus/model.ts";
-import type {
-  Building,
-  CampusPlace,
-} from "../src/features/campus/types.ts";
+import type { Building, CampusPlace } from "../src/features/campus/types.ts";
 
 const buildings: Building[] = [
   {
@@ -60,8 +57,14 @@ const places: CampusPlace[] = [
 ];
 
 test("building search matches canonical code, name, and aliases", () => {
-  assert.deepEqual(filterBuildings(buildings, "mn").map((item) => item.code), ["MN"]);
-  assert.deepEqual(filterBuildings(buildings, "davis").map((item) => item.code), ["DV"]);
+  assert.deepEqual(
+    filterBuildings(buildings, "mn").map((item) => item.code),
+    ["MN"],
+  );
+  assert.deepEqual(
+    filterBuildings(buildings, "davis").map((item) => item.code),
+    ["DV"],
+  );
 });
 
 test("place search includes kind, building, and amenities without inventing data", () => {
@@ -82,7 +85,10 @@ test("route duration rounds up conservatively", () => {
 });
 
 test("campus cache chunks round-trip exactly", () => {
-  const raw = JSON.stringify({ dataVersion: "2026-08-10", value: "x".repeat(7000) });
+  const raw = JSON.stringify({
+    dataVersion: "2026-08-10",
+    value: "x".repeat(7000),
+  });
   const chunks = splitForSecureStore(raw, 1800);
   assert.ok(chunks.length > 1);
   assert.equal(joinSecureStoreChunks(chunks), raw);

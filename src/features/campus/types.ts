@@ -7,10 +7,7 @@ export type FactStatus =
   | "unavailable"
   | "unknown";
 
-export type BuildingAccessibility =
-  | "accessible"
-  | "not_accessible"
-  | "unknown";
+export type BuildingAccessibility = "accessible" | "not_accessible" | "unknown";
 
 export interface Provenance {
   source: string;

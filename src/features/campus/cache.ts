@@ -38,13 +38,17 @@ export async function readCampusCache(): Promise<CampusSnapshot | null> {
   if (chunks.some((chunk) => chunk === null)) return null;
 
   try {
-    return JSON.parse(joinSecureStoreChunks(chunks as string[])) as CampusSnapshot;
+    return JSON.parse(
+      joinSecureStoreChunks(chunks as string[]),
+    ) as CampusSnapshot;
   } catch {
     return null;
   }
 }
 
-export async function writeCampusCache(snapshot: CampusSnapshot): Promise<void> {
+export async function writeCampusCache(
+  snapshot: CampusSnapshot,
+): Promise<void> {
   const previousRawMeta = await SecureStore.getItemAsync(CACHE_META_KEY);
   let previousChunks = 0;
   if (previousRawMeta) {
@@ -56,7 +60,10 @@ export async function writeCampusCache(snapshot: CampusSnapshot): Promise<void> 
     }
   }
 
-  const chunks = splitForSecureStore(JSON.stringify(snapshot), CACHE_CHUNK_SIZE);
+  const chunks = splitForSecureStore(
+    JSON.stringify(snapshot),
+    CACHE_CHUNK_SIZE,
+  );
   await Promise.all(
     chunks.map((chunk, index) =>
       SecureStore.setItemAsync(`${CACHE_CHUNK_PREFIX}${index}`, chunk, {
@@ -72,12 +79,10 @@ export async function writeCampusCache(snapshot: CampusSnapshot): Promise<void> 
 
   if (previousChunks > chunks.length) {
     await Promise.all(
-      Array.from(
-        { length: previousChunks - chunks.length },
-        (_, offset) =>
-          SecureStore.deleteItemAsync(
-            `${CACHE_CHUNK_PREFIX}${chunks.length + offset}`,
-          ),
+      Array.from({ length: previousChunks - chunks.length }, (_, offset) =>
+        SecureStore.deleteItemAsync(
+          `${CACHE_CHUNK_PREFIX}${chunks.length + offset}`,
+        ),
       ),
     );
   }
