@@ -20,6 +20,20 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+      - name: Generate Expo-compatible Worklets pin
+        run: npm install --save-exact react-native-worklets@0.10.1 --no-audit --no-fund
+      - name: Capture dependency pin
+        run: git diff --exit-code -- package.json package-lock.json
+      - name: Upload pinned dependency files
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worklets-pin
+          path: |
+            package.json
+            package-lock.json
+          if-no-files-found: error
+          retention-days: 3
       - name: Expo dependency compatibility
         run: npx expo install --check
       - name: Typecheck
@@ -27,25 +41,7 @@ jobs:
       - name: Unit tests
         run: npm test
       - name: Formatting
-        run: |
-          npx prettier --write \
-            src/features/auth/cloud-restore-model.ts \
-            src/features/auth/cloud-restore.ts \
-            src/features/timetable/store.tsx \
-            tests/cloud-restore-model.test.ts
-          git diff --exit-code
-      - name: Upload formatted sources
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: prettier-formatted-sources
-          path: |
-            src/features/auth/cloud-restore-model.ts
-            src/features/auth/cloud-restore.ts
-            src/features/timetable/store.tsx
-            tests/cloud-restore-model.test.ts
-          if-no-files-found: error
-          retention-days: 3
+        run: npm run format:check
       - name: Expo Doctor
         run: npx expo-doctor@latest
       - name: Bundle iOS
