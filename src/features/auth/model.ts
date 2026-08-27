@@ -6,7 +6,9 @@ export type RestoreDecisionInput = {
 };
 
 export function chooseRestoration(input: RestoreDecisionInput): RestoreResult {
-  if (input.cloudOutcome === "available") return { kind: "cloud", hasCloudState: true };
+  if (input.cloudOutcome === "available") {
+    return { kind: "cloud", hasCloudState: true };
+  }
   if (input.cloudOutcome === "failed") {
     return { kind: "local-after-cloud-failure", hasCloudState: false };
   }
@@ -20,11 +22,18 @@ export function shouldReplaceLocalTimetable(input: RestoreDecisionInput) {
   return input.cloudOutcome === "available";
 }
 
-export function accountSwitchRequiresIsolation(previousUserId: string | null, nextUserId: string | null) {
-  return Boolean(previousUserId && nextUserId && previousUserId !== nextUserId);
+export function accountSwitchRequiresIsolation(
+  previousUserId: string | null,
+  nextUserId: string | null,
+) {
+  return Boolean(
+    previousUserId && nextUserId && previousUserId !== nextUserId,
+  );
 }
 
-export function authFailureMessage(kind: "offline" | "expired" | "revoked" | "restore") {
+export function authFailureMessage(
+  kind: "offline" | "expired" | "revoked" | "restore",
+) {
   switch (kind) {
     case "offline":
       return "You are offline. Your local timetable stays available; account actions resume after reconnecting.";
