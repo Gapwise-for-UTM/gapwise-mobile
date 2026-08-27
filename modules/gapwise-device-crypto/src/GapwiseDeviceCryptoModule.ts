@@ -1,27 +1,36 @@
 import { requireNativeModule } from 'expo-modules-core';
 
 import type {
+  DevicePublicJwk,
   EncryptedRecord,
-  GeneratedDeviceKeyPair,
   GapwiseDeviceCryptoNativeModule,
 } from './GapwiseDeviceCrypto.types';
 
 const native = requireNativeModule<GapwiseDeviceCryptoNativeModule>('GapwiseDeviceCrypto');
 
-export function generateDeviceKeyPair(): GeneratedDeviceKeyPair {
-  return JSON.parse(native.generateDeviceKeyPair()) as GeneratedDeviceKeyPair;
+export function getOrCreatePublicJwk(accountId: string): DevicePublicJwk {
+  return JSON.parse(native.getOrCreatePublicJwk(accountId)) as DevicePublicJwk;
 }
 
-export function decryptWrappedKey(privateKeyAlias: string, wrappedKeyBase64: string): string {
-  return native.decryptWrappedKey(privateKeyAlias, wrappedKeyBase64);
+export function unwrapDataKey(
+  accountId: string,
+  keyId: string,
+  wrappedDekBase64Url: string,
+): string {
+  return native.unwrapDataKey(accountId, keyId, wrappedDekBase64Url);
 }
 
-export function importAesKey(keyBase64: string): string {
-  return native.importAesKey(keyBase64);
-}
-
-export function deleteAesKey(handle: string): void {
-  native.deleteAesKey(handle);
+export function decryptJsonRecord(
+  handle: string,
+  record: EncryptedRecord,
+  additionalDataUtf8: string,
+): string {
+  return native.decryptJsonRecord(
+    handle,
+    record.ciphertext,
+    record.nonce,
+    additionalDataUtf8,
+  );
 }
 
 export function encryptJsonRecord(
@@ -34,10 +43,6 @@ export function encryptJsonRecord(
   ) as EncryptedRecord;
 }
 
-export function decryptJsonRecord(
-  handle: string,
-  record: EncryptedRecord,
-  additionalDataUtf8: string,
-): string {
-  return native.decryptJsonRecord(handle, JSON.stringify(record), additionalDataUtf8);
+export function clearAccount(accountId: string): void {
+  native.clearAccount(accountId);
 }
