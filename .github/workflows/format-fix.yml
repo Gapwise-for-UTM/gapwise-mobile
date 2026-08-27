@@ -20,9 +20,13 @@ jobs:
           node-version: '22.13.1'
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npx prettier --write .
+      - name: Format non-workflow files
+        run: npx prettier --write . --ignore-path .github/workflows/.prettier-ignore-temp
+      - name: Emit formatted CI workflow
+        run: npx prettier .github/workflows/ci.yml | base64 -w0
       - name: Commit normalized formatting
         run: |
+          git checkout -- .github/workflows/ci.yml .github/workflows/format-fix.yml
           if git diff --quiet; then
             echo 'Formatting already normalized.'
             exit 0
