@@ -50,10 +50,19 @@ test("auth failures explicitly promise local continuity", () => {
 
 test("auth callback matching accepts only the exact registered route", () => {
   assert.equal(isAuthCallbackUrl(CALLBACK_URL, CALLBACK_URL), true);
-  assert.equal(isAuthCallbackUrl(`${CALLBACK_URL}#access_token=a`, CALLBACK_URL), true);
+  assert.equal(
+    isAuthCallbackUrl(`${CALLBACK_URL}#access_token=a`, CALLBACK_URL),
+    true,
+  );
   assert.equal(isAuthCallbackUrl(`${CALLBACK_URL}?code=a`, CALLBACK_URL), true);
-  assert.equal(isAuthCallbackUrl(`${CALLBACK_URL}-other#access_token=a`, CALLBACK_URL), false);
-  assert.equal(isAuthCallbackUrl("https://gapwise.ca/auth/callback", CALLBACK_URL), false);
+  assert.equal(
+    isAuthCallbackUrl(`${CALLBACK_URL}-other#access_token=a`, CALLBACK_URL),
+    false,
+  );
+  assert.equal(
+    isAuthCallbackUrl("https://gapwise.ca/auth/callback", CALLBACK_URL),
+    false,
+  );
 });
 
 test("magic-link request uses the supported GoTrue redirect query wire format", () => {
