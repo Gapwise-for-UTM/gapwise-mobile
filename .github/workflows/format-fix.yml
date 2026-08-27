@@ -21,18 +21,17 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - name: Format non-workflow files
-        run: npx prettier --write . --ignore-path .github/workflows/.prettier-ignore-temp
+        run: npx prettier --write "app/**/*.{ts,tsx}" "src/**/*.{ts,tsx}" "tests/**/*.mjs" README.md
       - name: Emit formatted CI workflow
         run: npx prettier .github/workflows/ci.yml | base64 -w0
       - name: Commit normalized formatting
         run: |
-          git checkout -- .github/workflows/ci.yml .github/workflows/format-fix.yml
           if git diff --quiet; then
             echo 'Formatting already normalized.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add app src tests README.md
           git commit -m 'style: normalize mobile formatting'
           git push origin HEAD:feat/mobile-phase-2-local-day
