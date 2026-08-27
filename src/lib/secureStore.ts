@@ -1,6 +1,6 @@
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
-const SESSION_KEY = 'gapwise.mobile.session.v1';
+const SESSION_KEY = "gapwise.mobile.session.v1";
 
 export async function readSession(): Promise<string | null> {
   return SecureStore.getItemAsync(SESSION_KEY);

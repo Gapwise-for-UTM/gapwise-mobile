@@ -1,8 +1,14 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { useGapwiseTheme } from '@/src/theme';
+import { Pressable, StyleSheet, Text } from "react-native";
+import * as Haptics from "expo-haptics";
+import { useGapwiseTheme } from "@/src/theme";
 
-export function PrimaryButton({ label, onPress }: { label: string; onPress: () => void }) {
+export function PrimaryButton({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
   const theme = useGapwiseTheme();
   return (
     <Pressable
@@ -13,7 +19,10 @@ export function PrimaryButton({ label, onPress }: { label: string; onPress: () =
       }}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: pressed ? theme.bluePressed : theme.blue, opacity: pressed ? 0.92 : 1 },
+        {
+          backgroundColor: pressed ? theme.bluePressed : theme.blue,
+          opacity: pressed ? 0.92 : 1,
+        },
       ]}
     >
       <Text style={styles.label}>{label}</Text>
@@ -22,6 +31,12 @@ export function PrimaryButton({ label, onPress }: { label: string; onPress: () =
 }
 
 const styles = StyleSheet.create({
-  button: { minHeight: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 18 },
-  label: { color: '#04111F', fontSize: 16, fontWeight: '800' },
+  button: {
+    minHeight: 52,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 18,
+  },
+  label: { color: "#04111F", fontSize: 16, fontWeight: "800" },
 });
