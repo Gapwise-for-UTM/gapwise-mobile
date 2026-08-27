@@ -10,6 +10,7 @@ import {
 import * as Linking from "expo-linking";
 import { getPublicSupabaseConfig } from "./config";
 import {
+  isAuthCallbackUrl,
   refreshSession,
   requestMagicLink as sendMagicLink,
   revokeSession,
@@ -82,7 +83,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const handleUrl = useCallback(
     async (url: string) => {
-      if (!url.startsWith("gapwise://auth/callback")) return;
+      if (!isAuthCallbackUrl(url)) return;
       setState({ status: "restoring", message: null });
       try {
         const session = await sessionFromCallback(url);
