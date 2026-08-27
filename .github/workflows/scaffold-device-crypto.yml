@@ -1,0 +1,40 @@
+name: Scaffold device crypto module
+
+on:
+  push:
+    branches: [feat/mobile-phase-4-auth-continuity]
+
+permissions:
+  contents: read
+
+jobs:
+  scaffold:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Scaffold Expo local module
+        env:
+          CI: "1"
+          EXPO_NO_TELEMETRY: "1"
+        run: >-
+          npx create-expo-module@latest --local
+          --name GapwiseDeviceCrypto
+          --description "Gapwise non-exportable device cryptography"
+          --package ca.gapwise.mobile.devicecrypto
+          --platform apple android
+      - name: Inventory scaffold
+        run: find modules -maxdepth 8 -type f -print | sort
+      - name: Upload scaffold
+        uses: actions/upload-artifact@v4
+        with:
+          name: gapwise-device-crypto-scaffold
+          path: modules/
+          if-no-files-found: error
