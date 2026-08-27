@@ -1,12 +1,12 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from "expo-modules-core";
 
 import type {
   DevicePublicJwk,
   EncryptedRecord,
   GapwiseDeviceCryptoNativeModule,
-} from './GapwiseDeviceCrypto.types';
+} from "./GapwiseDeviceCrypto.types";
 
-const native = requireNativeModule<GapwiseDeviceCryptoNativeModule>('GapwiseDeviceCrypto');
+const native = requireNativeModule<GapwiseDeviceCryptoNativeModule>("GapwiseDeviceCrypto");
 
 export function getOrCreatePublicJwk(accountId: string): DevicePublicJwk {
   return JSON.parse(native.getOrCreatePublicJwk(accountId)) as DevicePublicJwk;
@@ -25,7 +25,12 @@ export function decryptJsonRecord(
   record: EncryptedRecord,
   additionalDataUtf8: string,
 ): string {
-  return native.decryptJsonRecord(handle, record.ciphertext, record.nonce, additionalDataUtf8);
+  return native.decryptJsonRecord(
+    handle,
+    record.ciphertext,
+    record.nonce,
+    additionalDataUtf8,
+  );
 }
 
 export function encryptJsonRecord(
