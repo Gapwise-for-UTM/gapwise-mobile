@@ -50,21 +50,29 @@ export default function MoreScreen() {
 
   return (
     <Screen title="More" eyebrow="SETTINGS & TRUST">
-      <Card label="ACCOUNT" title={auth.state.status === "authenticated" ? "Signed in" : "Guest-first by default"}>
+      <Card
+        label="ACCOUNT"
+        title={
+          auth.state.status === "authenticated"
+            ? "Signed in"
+            : "Guest-first by default"
+        }
+      >
         {auth.state.status === "authenticated" ? (
           <>
             <Text style={[styles.body, { color: theme.textMuted }]}>
-              {auth.state.session.user.email ?? "Gapwise account"}. Session tokens stay in platform secure storage. Signing out does not erase this device’s local timetable.
+              {auth.state.session.user.email ?? "Gapwise account"}. Session
+              tokens stay in platform secure storage. Signing out does not erase
+              this device’s local timetable.
             </Text>
-            <PrimaryButton
-              label="Sign out"
-              onPress={() => void auth.signOut()}
-            />
+            <PrimaryButton label="Sign out" onPress={() => void auth.signOut()} />
           </>
         ) : (
           <>
             <Text style={[styles.body, { color: theme.textMuted }]}>
-              Sign-in is optional. Your timetable stays local while authentication starts, fails, or is interrupted; empty cloud state must not replace recoverable local data.
+              Sign-in is optional. Your timetable stays local while
+              authentication starts, fails, or is interrupted; empty cloud state
+              must not replace recoverable local data.
             </Text>
             {auth.configured ? (
               <>
@@ -95,13 +103,18 @@ export default function MoreScreen() {
               </>
             ) : (
               <Text style={[styles.notice, { color: theme.textMuted }]}>
-                Account sign-in is disabled in this build until public Supabase client configuration is supplied. No secret or privileged key is required or accepted.
+                Account sign-in is disabled in this build until public Supabase
+                client configuration is supplied. No secret or privileged key is
+                required or accepted.
               </Text>
             )}
           </>
         )}
         {auth.state.message ? (
-          <Text accessibilityRole="alert" style={[styles.notice, { color: theme.text }]}>
+          <Text
+            accessibilityRole="alert"
+            style={[styles.notice, { color: theme.text }]}
+          >
             {auth.state.message}
           </Text>
         ) : null}
