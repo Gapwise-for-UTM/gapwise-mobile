@@ -51,6 +51,7 @@ export default function CampusScreen() {
   const [query, setQuery] = useState("");
   const [from, setFrom] = useState<string>("MN");
   const [to, setTo] = useState<string>("IB");
+  const [selecting, setSelecting] = useState<"from" | "to">("from");
   const [route, setRoute] = useState<RouteResult | null>(null);
   const [routing, setRouting] = useState(false);
 
@@ -180,20 +181,33 @@ export default function CampusScreen() {
             },
           ]}
         />
+        <Text style={[styles.selectorHint, { color: theme.textMuted }]}>
+          Selecting route {selecting === "from" ? "origin" : "destination"}.
+          Next tap will set {selecting === "from" ? "From" : "To"}.
+        </Text>
         <View style={styles.chips}>
           {buildings.map((building) => (
             <Pressable
               key={building.code}
               accessibilityRole="button"
-              accessibilityLabel={`${building.code}, ${building.name}. ${accessibilityLabel(building.accessibility)}`}
+              accessibilityLabel={`${building.code}, ${building.name}. Set as route ${selecting === "from" ? "origin" : "destination"}. ${accessibilityLabel(building.accessibility)}`}
               onPress={() => {
-                if (from === building.code) setTo(building.code);
-                else setFrom(building.code);
+                if (selecting === "from") {
+                  setFrom(building.code);
+                  setSelecting("to");
+                } else {
+                  setTo(building.code);
+                  setSelecting("from");
+                }
+                setRoute(null);
               }}
               style={[
                 styles.buildingChip,
                 {
-                  borderColor: theme.border,
+                  borderColor:
+                    building.code === from || building.code === to
+                      ? theme.blue
+                      : theme.border,
                   backgroundColor: theme.background,
                 },
               ]}
@@ -205,6 +219,8 @@ export default function CampusScreen() {
                 {building.name}
               </Text>
               <Text style={[styles.small, { color: theme.textMuted }]}>
+                {building.code === from ? "From · " : ""}
+                {building.code === to ? "To · " : ""}
                 {buildingSummary(building)}
               </Text>
               <Text style={[styles.small, { color: theme.textMuted }]}>
@@ -243,10 +259,9 @@ export default function CampusScreen() {
 
       <Card label="ROUTE" title={`${from} → ${to}`}>
         <Text style={[styles.body, { color: theme.textMuted }]}>
-          Tap a building above to change the route origin. Tap the selected
-          origin again to set a destination. Route results are textual first so
-          the same uncertainty is available to screen-reader users without
-          relying on a map.
+          Building taps alternate between route origin and destination. Route
+          results are textual first so the same uncertainty is available to
+          screen-reader users without relying on a map.
         </Text>
         <View style={styles.routeActions}>
           <PrimaryButton
@@ -299,6 +314,7 @@ const styles = StyleSheet.create({
   body: { fontSize: 15, lineHeight: 22 },
   meta: { marginTop: 10, fontSize: 12, fontWeight: "700" },
   notice: { marginTop: 10, fontSize: 13, lineHeight: 19, fontWeight: "600" },
+  selectorHint: { marginTop: 10, fontSize: 12, lineHeight: 18, fontWeight: "700" },
   input: {
     borderWidth: 1,
     borderRadius: 12,
