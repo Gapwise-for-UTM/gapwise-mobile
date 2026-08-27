@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isAuthCallbackUrl, requestMagicLink } from "../src/features/auth/client.ts";
 import {
   accountSwitchRequiresIsolation,
   authFailureMessage,
+  buildMagicLinkRequest,
   chooseRestoration,
+  isAuthCallbackUrl,
   shouldReplaceLocalTimetable,
 } from "../src/features/auth/model.ts";
+
+const CALLBACK_URL = "gapwise://auth/callback";
 
 test("empty cloud state preserves recoverable local timetable", () => {
   const input = { localHasTimetable: true, cloudOutcome: "empty" as const };
@@ -27,10 +30,7 @@ test("failed and interrupted restore never replace local state", () => {
 });
 
 test("authoritative available cloud state is the only replacement case", () => {
-  const input = {
-    localHasTimetable: true,
-    cloudOutcome: "available" as const,
-  };
+  const input = { localHasTimetable: true, cloudOutcome: "available" as const };
   assert.equal(chooseRestoration(input).kind, "cloud");
   assert.equal(shouldReplaceLocalTimetable(input), true);
 });
@@ -49,48 +49,27 @@ test("auth failures explicitly promise local continuity", () => {
 });
 
 test("auth callback matching accepts only the exact registered route", () => {
-  assert.equal(isAuthCallbackUrl("gapwise://auth/callback"), true);
-  assert.equal(isAuthCallbackUrl("gapwise://auth/callback#access_token=a"), true);
-  assert.equal(isAuthCallbackUrl("gapwise://auth/callback?code=a"), true);
-  assert.equal(isAuthCallbackUrl("gapwise://auth/callback-attacker#access_token=a"), false);
-  assert.equal(isAuthCallbackUrl("https://gapwise.ca/auth/callback"), false);
+  assert.equal(isAuthCallbackUrl(CALLBACK_URL, CALLBACK_URL), true);
+  assert.equal(isAuthCallbackUrl(`${CALLBACK_URL}#access_token=a`, CALLBACK_URL), true);
+  assert.equal(isAuthCallbackUrl(`${CALLBACK_URL}?code=a`, CALLBACK_URL), true);
+  assert.equal(isAuthCallbackUrl(`${CALLBACK_URL}-other#access_token=a`, CALLBACK_URL), false);
+  assert.equal(isAuthCallbackUrl("https://gapwise.ca/auth/callback", CALLBACK_URL), false);
 });
 
-test("magic-link request uses the supported GoTrue redirect query wire format", async () => {
-  const previousUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const previousKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  const previousFetch = globalThis.fetch;
-  process.env.EXPO_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
-  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test";
-
-  let capturedUrl = "";
-  let capturedInit: RequestInit | undefined;
-  globalThis.fetch = async (input, init) => {
-    capturedUrl = String(input);
-    capturedInit = init;
-    return new Response(null, { status: 200 });
-  };
-
-  try {
-    await requestMagicLink(" Student@Example.com ");
-    assert.equal(
-      capturedUrl,
-      "https://example.supabase.co/auth/v1/otp?redirect_to=gapwise%3A%2F%2Fauth%2Fcallback",
-    );
-    assert.deepEqual(JSON.parse(String(capturedInit?.body)), {
-      email: "student@example.com",
-      data: {},
-      create_user: true,
-    });
-    assert.equal(
-      new Headers(capturedInit?.headers).get("apikey"),
-      "sb_publishable_test",
-    );
-  } finally {
-    globalThis.fetch = previousFetch;
-    if (previousUrl === undefined) delete process.env.EXPO_PUBLIC_SUPABASE_URL;
-    else process.env.EXPO_PUBLIC_SUPABASE_URL = previousUrl;
-    if (previousKey === undefined) delete process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    else process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = previousKey;
-  }
+test("magic-link request uses the supported GoTrue redirect query wire format", () => {
+  assert.deepEqual(
+    buildMagicLinkRequest(
+      "https://example.supabase.co",
+      " Student@Example.com ",
+      CALLBACK_URL,
+    ),
+    {
+      url: "https://example.supabase.co/auth/v1/otp?redirect_to=gapwise%3A%2F%2Fauth%2Fcallback",
+      body: {
+        email: "student@example.com",
+        data: {},
+        create_user: true,
+      },
+    },
+  );
 });
