@@ -34,6 +34,7 @@ type TimetableState = {
   loadSample: () => void;
   clear: () => void;
   setActiveTerm: (term: Term) => void;
+  replaceFromCloud: (meetings: Meeting[]) => void;
 };
 
 const TimetableContext = createContext<TimetableState | null>(null);
@@ -124,6 +125,19 @@ export function TimetableProvider({ children }: PropsWithChildren) {
     setActiveTermState(term);
   }, []);
 
+  const replaceFromCloud = useCallback(
+    (restoredMeetings: Meeting[]) => {
+      if (!hydrated) {
+        throw new Error("Local timetable hydration must finish before cloud restore.");
+      }
+      // Cloud data reaches this boundary only after the complete encrypted row has
+      // authenticated and parsed. No partial or failed restore can mutate local state.
+      setPersistenceEnabled(true);
+      setMeetings(restoredMeetings);
+    },
+    [hydrated],
+  );
+
   const value = useMemo<TimetableState>(
     () => ({
       meetings,
@@ -134,6 +148,7 @@ export function TimetableProvider({ children }: PropsWithChildren) {
       loadSample,
       clear,
       setActiveTerm,
+      replaceFromCloud,
     }),
     [
       activeTerm,
@@ -142,6 +157,7 @@ export function TimetableProvider({ children }: PropsWithChildren) {
       loadSample,
       meetings,
       persistenceError,
+      replaceFromCloud,
       setActiveTerm,
     ],
   );
