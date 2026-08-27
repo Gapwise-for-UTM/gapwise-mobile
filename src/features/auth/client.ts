@@ -1,4 +1,5 @@
 import { AUTH_CALLBACK_URL, getPublicSupabaseConfig } from "./config";
+import { buildMagicLinkRequest, isAuthCallbackUrl } from "./model";
 import type { AuthSession, AuthUser } from "./types";
 
 function requireConfig() {
@@ -27,29 +28,13 @@ async function readJson(response: Response) {
   }
 }
 
-export function isAuthCallbackUrl(url: string) {
-  return (
-    url === AUTH_CALLBACK_URL ||
-    url.startsWith(`${AUTH_CALLBACK_URL}?`) ||
-    url.startsWith(`${AUTH_CALLBACK_URL}#`)
-  );
-}
-
 export async function requestMagicLink(email: string) {
   const config = requireConfig();
-  const normalized = email.trim().toLowerCase();
-  if (!/^\S+@\S+\.\S+$/.test(normalized)) {
-    throw new Error("Enter a valid email address.");
-  }
-  const redirectTo = encodeURIComponent(AUTH_CALLBACK_URL);
-  const response = await fetch(`${config.url}/auth/v1/otp?redirect_to=${redirectTo}`, {
+  const request = buildMagicLinkRequest(config.url, email, AUTH_CALLBACK_URL);
+  const response = await fetch(request.url, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({
-      email: normalized,
-      data: {},
-      create_user: true,
-    }),
+    body: JSON.stringify(request.body),
   });
   if (!response.ok) throw new Error("Gapwise could not send the sign-in link.");
 }
@@ -90,7 +75,7 @@ function parseUser(value: unknown): AuthUser {
 }
 
 export async function sessionFromCallback(url: string): Promise<AuthSession> {
-  if (!isAuthCallbackUrl(url)) {
+  if (!isAuthCallbackUrl(url, AUTH_CALLBACK_URL)) {
     throw new Error("Unexpected authentication callback.");
   }
   const values = parseFragment(url);
