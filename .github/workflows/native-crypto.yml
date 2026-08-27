@@ -1,0 +1,55 @@
+name: Native crypto compile
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "modules/gapwise-device-crypto/**"
+      - "app.json"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/native-crypto.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx expo prebuild --platform android --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+      - run: ./gradlew :app:assembleDebug --no-daemon
+        working-directory: android
+
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx expo prebuild --platform ios --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+      - run: npx pod-install ios
+      - name: Compile iOS app without signing
+        run: >-
+          xcodebuild
+          -workspace ios/Gapwise.xcworkspace
+          -scheme Gapwise
+          -sdk iphonesimulator
+          -configuration Debug
+          CODE_SIGNING_ALLOWED=NO
+          build
