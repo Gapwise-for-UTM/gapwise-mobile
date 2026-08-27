@@ -1,42 +1,27 @@
-import { NativeModule, requireNativeModule } from "expo";
+import { requireNativeModule } from 'expo-modules-core';
 
-import type { DevicePublicJwk, EncryptedRecord } from "./GapwiseDeviceCrypto.types";
+import type {
+  EncryptedRecord,
+  GeneratedDeviceKeyPair,
+  GapwiseDeviceCryptoNativeModule,
+} from './GapwiseDeviceCrypto.types';
 
-declare class GapwiseDeviceCryptoNativeModule extends NativeModule<{}> {
-  getOrCreatePublicJwk(accountId: string): string;
-  unwrapDataKey(accountId: string, keyId: string, wrappedDekBase64Url: string): string;
-  decryptJsonRecord(
-    handle: string,
-    ciphertextBase64Url: string,
-    nonceBase64Url: string,
-    additionalDataUtf8: string,
-  ): string;
-  encryptJsonRecord(handle: string, plaintextUtf8: string, additionalDataUtf8: string): string;
-  clearAccount(accountId: string): void;
+const native = requireNativeModule<GapwiseDeviceCryptoNativeModule>('GapwiseDeviceCrypto');
+
+export function generateDeviceKeyPair(): GeneratedDeviceKeyPair {
+  return JSON.parse(native.generateDeviceKeyPair()) as GeneratedDeviceKeyPair;
 }
 
-const native = requireNativeModule<GapwiseDeviceCryptoNativeModule>("GapwiseDeviceCrypto");
-
-export function getOrCreatePublicJwk(accountId: string): DevicePublicJwk {
-  return JSON.parse(native.getOrCreatePublicJwk(accountId)) as DevicePublicJwk;
+export function decryptWrappedKey(privateKeyAlias: string, wrappedKeyBase64: string): string {
+  return native.decryptWrappedKey(privateKeyAlias, wrappedKeyBase64);
 }
 
-export function unwrapDataKey(accountId: string, keyId: string, wrappedDekBase64Url: string) {
-  return native.unwrapDataKey(accountId, keyId, wrappedDekBase64Url);
+export function importAesKey(keyBase64: string): string {
+  return native.importAesKey(keyBase64);
 }
 
-export function decryptJsonRecord(
-  handle: string,
-  ciphertextBase64Url: string,
-  nonceBase64Url: string,
-  additionalDataUtf8: string,
-) {
-  return native.decryptJsonRecord(
-    handle,
-    ciphertextBase64Url,
-    nonceBase64Url,
-    additionalDataUtf8,
-  );
+export function deleteAesKey(handle: string): void {
+  native.deleteAesKey(handle);
 }
 
 export function encryptJsonRecord(
@@ -44,9 +29,15 @@ export function encryptJsonRecord(
   plaintextUtf8: string,
   additionalDataUtf8: string,
 ): EncryptedRecord {
-  return JSON.parse(native.encryptJsonRecord(handle, plaintextUtf8, additionalDataUtf8)) as EncryptedRecord;
+  return JSON.parse(
+    native.encryptJsonRecord(handle, plaintextUtf8, additionalDataUtf8),
+  ) as EncryptedRecord;
 }
 
-export function clearAccount(accountId: string) {
-  native.clearAccount(accountId);
+export function decryptJsonRecord(
+  handle: string,
+  record: EncryptedRecord,
+  additionalDataUtf8: string,
+): string {
+  return native.decryptJsonRecord(handle, JSON.stringify(record), additionalDataUtf8);
 }
