@@ -118,13 +118,11 @@ export function TimetableProvider({ children }: PropsWithChildren) {
     setMeetings([]);
   }, [enablePersistenceForExplicitChange]);
 
-  const setActiveTerm = useCallback(
-    (term: Term) => {
-      enablePersistenceForExplicitChange();
-      setActiveTermState(term);
-    },
-    [enablePersistenceForExplicitChange],
-  );
+  const setActiveTerm = useCallback((term: Term) => {
+    // A term-tab tap is only a view change. After a failed restore it must never
+    // enable writes that could replace recoverable persisted meetings with defaults.
+    setActiveTermState(term);
+  }, []);
 
   const value = useMemo<TimetableState>(
     () => ({
