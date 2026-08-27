@@ -14,7 +14,11 @@ export type EncryptedRecord = {
 
 export type GapwiseDeviceCryptoNativeModule = {
   getOrCreatePublicJwk(accountId: string): string;
-  unwrapDataKey(accountId: string, keyId: string, wrappedDekBase64Url: string): string;
+  unwrapDataKey(
+    accountId: string,
+    keyId: string,
+    wrappedDekBase64Url: string,
+  ): string;
   decryptJsonRecord(
     handle: string,
     ciphertextBase64Url: string,
