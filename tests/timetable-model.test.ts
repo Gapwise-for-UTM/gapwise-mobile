@@ -56,7 +56,10 @@ test("time and duration labels remain student-readable", () => {
 test("location labels never invent a campus location", () => {
   assert.equal(locationLabel(meeting({})), "MN 1210");
   assert.equal(locationLabel(meeting({ room: null })), "MN");
-  assert.equal(locationLabel(meeting({ buildingCode: null, room: null })), "Location TBA");
+  assert.equal(
+    locationLabel(meeting({ buildingCode: null, room: null })),
+    "Location TBA",
+  );
   assert.equal(locationLabel(meeting({ locationUnknown: true })), "Location TBA");
 });
 
@@ -64,8 +67,18 @@ test("gaps are computed only between non-overlapping meetings in the same term a
   const first = meeting({ id: "first", startTime: 600, endTime: 660 });
   const overlap = meeting({ id: "overlap", startTime: 650, endTime: 700 });
   const second = meeting({ id: "second", startTime: 780, endTime: 840 });
-  const winter = meeting({ id: "winter", term: "Winter", startTime: 900, endTime: 960 });
-  const tuesday = meeting({ id: "tuesday", weekday: "Tuesday", startTime: 900, endTime: 960 });
+  const winter = meeting({
+    id: "winter",
+    term: "Winter",
+    startTime: 900,
+    endTime: 960,
+  });
+  const tuesday = meeting({
+    id: "tuesday",
+    weekday: "Tuesday",
+    startTime: 900,
+    endTime: 960,
+  });
 
   const gaps = gapsForMeetings([second, winter, overlap, tuesday, first]);
 
