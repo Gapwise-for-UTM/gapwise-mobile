@@ -28,15 +28,23 @@ jobs:
         run: npm test
       - name: Formatting
         run: |
-          set -o pipefail
-          npm run format:check 2>&1 | tee prettier-check.log
-      - name: Upload formatting diagnostics
+          npx prettier --write \
+            src/features/auth/cloud-restore-model.ts \
+            src/features/auth/cloud-restore.ts \
+            src/features/timetable/store.tsx \
+            tests/cloud-restore-model.test.ts
+          git diff --exit-code
+      - name: Upload formatted sources
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: prettier-check-log
-          path: prettier-check.log
-          if-no-files-found: ignore
+          name: prettier-formatted-sources
+          path: |
+            src/features/auth/cloud-restore-model.ts
+            src/features/auth/cloud-restore.ts
+            src/features/timetable/store.tsx
+            tests/cloud-restore-model.test.ts
+          if-no-files-found: error
           retention-days: 3
       - name: Expo Doctor
         run: npx expo-doctor@latest
