@@ -60,7 +60,10 @@ test("location labels never invent a campus location", () => {
     locationLabel(meeting({ buildingCode: null, room: null })),
     "Location TBA",
   );
-  assert.equal(locationLabel(meeting({ locationUnknown: true })), "Location TBA");
+  assert.equal(
+    locationLabel(meeting({ locationUnknown: true })),
+    "Location TBA",
+  );
 });
 
 test("gaps are computed only between non-overlapping meetings in the same term and day", () => {
