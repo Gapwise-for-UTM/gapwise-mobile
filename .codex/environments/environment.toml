@@ -1,0 +1,18 @@
+[environment]
+name = "Gapwise Mobile"
+
+[[actions]]
+name = "Start Expo"
+command = "./script/build_and_run.sh start"
+
+[[actions]]
+name = "Expo Doctor"
+command = "./script/build_and_run.sh doctor"
+
+[[actions]]
+name = "Validate iOS bundle"
+command = "./script/build_and_run.sh ios-bundle"
+
+[[actions]]
+name = "Validate Android bundle"
+command = "./script/build_and_run.sh android-bundle"
