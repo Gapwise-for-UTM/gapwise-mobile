@@ -19,7 +19,17 @@ jobs:
           node-version: "22.13.1"
           cache: npm
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: |
+          set -o pipefail
+          npm ci --no-audit --no-fund 2>&1 | tee npm-ci.log
+      - name: Upload install diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-ci-log
+          path: npm-ci.log
+          if-no-files-found: ignore
+          retention-days: 3
       - name: Expo dependency compatibility
         run: npx expo install --check
       - name: Typecheck
