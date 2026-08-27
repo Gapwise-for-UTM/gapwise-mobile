@@ -29,6 +29,33 @@ export function accountSwitchRequiresIsolation(
   return Boolean(previousUserId && nextUserId && previousUserId !== nextUserId);
 }
 
+export function isAuthCallbackUrl(url: string, callbackUrl: string) {
+  return (
+    url === callbackUrl ||
+    url.startsWith(`${callbackUrl}?`) ||
+    url.startsWith(`${callbackUrl}#`)
+  );
+}
+
+export function buildMagicLinkRequest(
+  baseUrl: string,
+  email: string,
+  callbackUrl: string,
+) {
+  const normalized = email.trim().toLowerCase();
+  if (!/^\S+@\S+\.\S+$/.test(normalized)) {
+    throw new Error("Enter a valid email address.");
+  }
+  return {
+    url: `${baseUrl}/auth/v1/otp?redirect_to=${encodeURIComponent(callbackUrl)}`,
+    body: {
+      email: normalized,
+      data: {},
+      create_user: true,
+    },
+  };
+}
+
 export function authFailureMessage(
   kind: "offline" | "expired" | "revoked" | "restore",
 ) {
