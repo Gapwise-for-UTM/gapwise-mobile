@@ -25,6 +25,10 @@ export type GapwiseDeviceCryptoNativeModule = {
     nonceBase64Url: string,
     additionalDataUtf8: string,
   ): string;
-  encryptJsonRecord(handle: string, plaintextUtf8: string, additionalDataUtf8: string): string;
+  encryptJsonRecord(
+    handle: string,
+    plaintextUtf8: string,
+    additionalDataUtf8: string,
+  ): string;
   clearAccount(accountId: string): void;
 };
