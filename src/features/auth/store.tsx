@@ -51,7 +51,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         return;
       }
       if (!configured) {
-        setState({ status: "guest", message: "Account sign-in is not configured in this build. Your local timetable is unchanged." });
+        setState({
+          status: "guest",
+          message: "Account sign-in is not configured in this build. Your local timetable is unchanged.",
+        });
         return;
       }
       if (stored.expiresAt > Date.now() + REFRESH_SKEW_MS) {
@@ -100,12 +103,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const requestMagicLink = useCallback(async (email: string) => {
     try {
       await sendMagicLink(email);
-      setState((current) => ({ ...current, message: "Check your email for the Gapwise sign-in link. Your local timetable stays on this device while you sign in." }));
+      setState((current) => ({
+        ...current,
+        message:
+          "Check your email for the Gapwise sign-in link. Your local timetable stays on this device while you sign in.",
+      }));
     } catch (error) {
       const offline = error instanceof TypeError;
       setState((current) => ({
         ...current,
-        message: offline ? authFailureMessage("offline") : error instanceof Error ? error.message : "Sign-in could not start.",
+        message: offline
+          ? authFailureMessage("offline")
+          : error instanceof Error
+            ? error.message
+            : "Sign-in could not start.",
       }));
       throw error;
     }
@@ -119,7 +130,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [state]);
 
   const dismissMessage = useCallback(() => {
-    setState((current) => ({ ...current, message: null }));
+    setState((current) =>
+      current.status === "error" ? { status: "guest", message: null } : { ...current, message: null },
+    );
   }, []);
 
   const value = useMemo<AuthContextValue>(
