@@ -1,47 +1,195 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { Card } from '@/src/components/Card';
-import { Screen } from '@/src/components/Screen';
-import { useGapwiseTheme } from '@/src/theme';
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Card } from "@/src/components/Card";
+import { PrimaryButton } from "@/src/components/PrimaryButton";
+import { Screen } from "@/src/components/Screen";
+import {
+  formatDuration,
+  formatTime,
+  locationLabel,
+  WEEKDAYS,
+  type Term,
+} from "@/src/features/timetable/model";
+import { useTimetable } from "@/src/features/timetable/store";
+import { useGapwiseTheme } from "@/src/theme";
 
-const preview = [
-  { time: '10:00–11:00', course: 'CSC110', place: 'MN 1210', type: 'Class' },
-  { time: '11:10–12:00', course: 'MAT157', place: 'DH 2020', type: 'Class' },
-  { time: '12:00–2:00', course: 'Between classes', place: '2h available', type: 'Gap' },
-  { time: '2:00–3:00', course: 'MAT223', place: 'IB 110', type: 'Class' },
-];
+const TERMS: Term[] = ["Fall", "Winter", "Summer"];
 
 export default function TimetableScreen() {
   const theme = useGapwiseTheme();
+  const {
+    meetings,
+    gaps,
+    activeTerm,
+    setActiveTerm,
+    loadSample,
+    clear,
+    hydrated,
+    persistenceError,
+  } = useTimetable();
+  const termMeetings = meetings.filter(
+    (meeting) => meeting.term === activeTerm,
+  );
+
   return (
-    <Screen title="Timetable" eyebrow="SYNTHETIC PREVIEW">
-      <Card title="A native timetable built around the gaps">
-        <Text style={[styles.body, { color: theme.textMuted }]}>This screen currently uses synthetic preview data so you can evaluate the mobile layout without uploading personal information. ACORN import and encrypted local persistence are the next implementation phase.</Text>
+    <Screen title="Timetable" eyebrow="LOCAL STUDENT DAY">
+      <Card label="PRIVACY" title="Saved on this device">
+        <Text style={[styles.body, { color: theme.textMuted }]}>
+          Gapwise restores this versioned timetable locally before rendering
+          your day. No account or cloud upload is required.
+        </Text>
+        <View style={styles.termRow}>
+          {TERMS.map((term) => (
+            <Pressable
+              key={term}
+              accessibilityRole="button"
+              accessibilityState={{ selected: activeTerm === term }}
+              onPress={() => setActiveTerm(term)}
+              style={[
+                styles.term,
+                {
+                  borderColor: activeTerm === term ? theme.blue : theme.border,
+                  backgroundColor:
+                    activeTerm === term ? theme.surfaceRaised : theme.surface,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.termText,
+                  { color: activeTerm === term ? theme.blue : theme.textMuted },
+                ]}
+              >
+                {term}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </Card>
-      <View style={styles.timeline}>
-        {preview.map((item) => (
-          <View key={`${item.time}-${item.course}`} style={[styles.row, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <View style={[styles.dot, { backgroundColor: item.type === 'Gap' ? theme.success : theme.blue }]} />
-            <View style={styles.copy}>
-              <Text style={[styles.time, { color: theme.textMuted }]}>{item.time}</Text>
-              <Text style={[styles.course, { color: theme.text }]}>{item.course}</Text>
-              <Text style={[styles.place, { color: theme.textMuted }]}>{item.place}</Text>
-            </View>
-            <Text style={[styles.type, { color: item.type === 'Gap' ? theme.success : theme.blue }]}>{item.type}</Text>
+
+      {!hydrated ? (
+        <Text style={[styles.body, { color: theme.textMuted }]}>
+          Restoring timetable…
+        </Text>
+      ) : null}
+      {hydrated && termMeetings.length === 0 ? (
+        <Card title="Start with a safe preview">
+          <Text style={[styles.body, { color: theme.textMuted }]}>
+            The sample is generated locally and can be removed at any time.
+            Import from Gapwise/ACORN will use this same canonical meeting model
+            rather than creating a second schedule format.
+          </Text>
+          <PrimaryButton label="Load sample timetable" onPress={loadSample} />
+        </Card>
+      ) : null}
+
+      {WEEKDAYS.map((day) => {
+        const dayMeetings = termMeetings
+          .filter((meeting) => meeting.weekday === day)
+          .sort((a, b) => a.startTime - b.startTime);
+        if (dayMeetings.length === 0) return null;
+        const dayGaps = gaps.filter(
+          (gap) => gap.term === activeTerm && gap.weekday === day,
+        );
+        return (
+          <View key={day} style={styles.day}>
+            <Text
+              accessibilityRole="header"
+              style={[styles.dayTitle, { color: theme.text }]}
+            >
+              {day}
+            </Text>
+            {dayMeetings.map((meeting) => (
+              <View
+                key={meeting.id}
+                style={[
+                  styles.row,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                ]}
+              >
+                <View style={[styles.dot, { backgroundColor: theme.blue }]} />
+                <View style={styles.copy}>
+                  <Text style={[styles.time, { color: theme.textMuted }]}>
+                    {formatTime(meeting.startTime)}–
+                    {formatTime(meeting.endTime)}
+                  </Text>
+                  <Text style={[styles.course, { color: theme.text }]}>
+                    {meeting.courseCode}
+                  </Text>
+                  <Text style={[styles.place, { color: theme.textMuted }]}>
+                    {locationLabel(meeting)}
+                  </Text>
+                </View>
+              </View>
+            ))}
+            {dayGaps.map((gap) => (
+              <View
+                key={gap.id}
+                style={[styles.gapRow, { borderColor: theme.border }]}
+              >
+                <Text style={[styles.gapLabel, { color: theme.success }]}>
+                  GAP · {formatDuration(gap.durationMinutes)}
+                </Text>
+                <Text style={[styles.place, { color: theme.textMuted }]}>
+                  {formatTime(gap.startTime)}–{formatTime(gap.endTime)}
+                </Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        );
+      })}
+
+      {meetings.length > 0 ? (
+        <PrimaryButton label="Clear local timetable" onPress={clear} />
+      ) : null}
+      {persistenceError ? (
+        <Text
+          accessibilityRole="alert"
+          style={[styles.warning, { color: theme.warning }]}
+        >
+          {persistenceError}
+        </Text>
+      ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   body: { fontSize: 15, lineHeight: 23 },
-  timeline: { gap: 10 },
-  row: { minHeight: 86, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  dot: { width: 8, height: 44, borderRadius: 999 },
+  termRow: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
+  term: {
+    minHeight: 44,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  termText: { fontSize: 14, fontWeight: "800" },
+  day: { gap: 9 },
+  dayTitle: { fontSize: 20, fontWeight: "800", marginTop: 4 },
+  row: {
+    minHeight: 82,
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  dot: { width: 8, height: 42, borderRadius: 999 },
   copy: { flex: 1, gap: 2 },
-  time: { fontSize: 12, fontWeight: '700' },
-  course: { fontSize: 18, fontWeight: '800' },
-  place: { fontSize: 13 },
-  type: { fontSize: 11, fontWeight: '800', letterSpacing: 0.8 },
+  time: { fontSize: 12, fontWeight: "700" },
+  course: { fontSize: 18, fontWeight: "800" },
+  place: { fontSize: 13, lineHeight: 18 },
+  gapRow: {
+    minHeight: 58,
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    justifyContent: "center",
+    gap: 2,
+  },
+  gapLabel: { fontSize: 12, fontWeight: "800", letterSpacing: 0.8 },
+  warning: { fontSize: 13, lineHeight: 19, fontWeight: "600" },
 });
