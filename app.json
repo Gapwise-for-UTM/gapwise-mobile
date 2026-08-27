@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Gapwise",
+    "slug": "gapwise-mobile",
+    "version": "0.1.0",
+    "scheme": "gapwise",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "plugins": ["expo-router", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ca.gapwise.mobile"
+    },
+    "android": {
+      "package": "ca.gapwise.mobile"
+    },
+    "extra": {
+      "apiBaseUrl": "https://api.gapwise.ca/v1"
+    }
+  }
+}
