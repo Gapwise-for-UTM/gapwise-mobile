@@ -6,8 +6,9 @@ import type {
   GapwiseDeviceCryptoNativeModule,
 } from "./GapwiseDeviceCrypto.types";
 
-const native =
-  requireNativeModule<GapwiseDeviceCryptoNativeModule>("GapwiseDeviceCrypto");
+const native = requireNativeModule<GapwiseDeviceCryptoNativeModule>(
+  "GapwiseDeviceCrypto",
+);
 
 export function getOrCreatePublicJwk(accountId: string): DevicePublicJwk {
   return JSON.parse(native.getOrCreatePublicJwk(accountId)) as DevicePublicJwk;
