@@ -7,6 +7,7 @@ import {
   filterPlaces,
   joinSecureStoreChunks,
   routeDurationLabel,
+  routeVerificationLabel,
   snapshotFreshnessLabel,
   splitForSecureStore,
 } from "../src/features/campus/model.ts";
@@ -76,6 +77,31 @@ test("place search includes kind, building, and amenities without inventing data
 test("accessibility labels preserve unknown state", () => {
   assert.equal(accessibilityLabel("unknown"), "Accessibility unknown");
   assert.equal(accessibilityLabel("accessible"), "Source marks accessible");
+});
+
+test("route labels preserve verification uncertainty", () => {
+  const baseRoute = {
+    dataVersion: "2026-08-10",
+    from: buildings[0]!,
+    to: buildings[1]!,
+    status: "approximate" as const,
+    accuracy: "building-level",
+    totalDistanceMeters: null,
+    indoorDistanceMeters: null,
+    outdoorDistanceMeters: null,
+    estimatedSeconds: null,
+    floorChanges: null,
+    warnings: [],
+  };
+
+  assert.equal(
+    routeVerificationLabel({ ...baseRoute, routeVerification: "inferred" }),
+    "Inferred route evidence",
+  );
+  assert.equal(
+    routeVerificationLabel({ ...baseRoute, routeVerification: "unavailable" }),
+    "Route evidence unavailable",
+  );
 });
 
 test("route duration rounds up conservatively", () => {
