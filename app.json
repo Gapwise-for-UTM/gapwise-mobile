@@ -3,6 +3,9 @@
     "name": "Gapwise",
     "slug": "gapwise-mobile",
     "version": "0.1.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "scheme": "gapwise",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
@@ -12,10 +15,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "ca.gapwise.mobile"
+      "bundleIdentifier": "ca.gapwise.mobile",
+      "buildNumber": "1"
     },
     "android": {
-      "package": "ca.gapwise.mobile"
+      "package": "ca.gapwise.mobile",
+      "versionCode": 1
     },
     "extra": {
       "apiBaseUrl": "https://api.gapwise.ca/v1"
