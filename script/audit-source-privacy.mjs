@@ -48,4 +48,6 @@ for (const root of roots) {
 }
 
 if (failed) process.exit(1);
-console.log("Source privacy audit passed: no runtime logging or privileged secret material found.");
+console.log(
+  "Source privacy audit passed: no runtime logging or privileged secret material found.",
+);
