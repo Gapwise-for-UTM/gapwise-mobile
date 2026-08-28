@@ -123,6 +123,53 @@ export function gapsForMeetings(meetings: readonly Meeting[]): Gap[] {
   );
 }
 
+function compareMeetings(a: Meeting, b: Meeting): number {
+  return (
+    WEEKDAYS.indexOf(a.weekday) - WEEKDAYS.indexOf(b.weekday) ||
+    a.startTime - b.startTime ||
+    a.endTime - b.endTime ||
+    a.courseCode.localeCompare(b.courseCode) ||
+    a.sectionCode.localeCompare(b.sectionCode)
+  );
+}
+
+/**
+ * Build a compact deterministic representation for an explicit user share.
+ * Only canonical meeting fields already visible in the timetable UI are used;
+ * account/session/cloud metadata and internal meeting IDs never enter the text.
+ */
+export function timetableShareText(
+  meetings: readonly Meeting[],
+  term: Term,
+): string {
+  const selected = meetings
+    .filter((meeting) => meeting.term === term)
+    .slice()
+    .sort(compareMeetings);
+
+  const lines = [`Gapwise · ${term} timetable`];
+  if (selected.length === 0) {
+    return `${lines[0]}\nNo meetings saved for this term.`;
+  }
+
+  let currentDay: Weekday | null = null;
+  for (const meeting of selected) {
+    if (meeting.weekday !== currentDay) {
+      currentDay = meeting.weekday;
+      lines.push("", currentDay);
+    }
+    lines.push(
+      `${formatTime(meeting.startTime)}–${formatTime(meeting.endTime)} · ${meeting.courseCode} ${meeting.activityType} · ${locationLabel(meeting)}`,
+    );
+  }
+
+  lines.push(
+    "",
+    "Shared intentionally from Gapwise. No account data included.",
+  );
+  return lines.join("\n");
+}
+
 export const SAMPLE_MEETINGS: Meeting[] = [
   {
     id: "sample-csc110",

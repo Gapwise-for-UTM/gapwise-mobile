@@ -40,3 +40,5 @@ jobs:
           EXPO_PUBLIC_GAPWISE_CHANNEL: ci
           EXPO_PUBLIC_GAPWISE_COMMIT_SHA: ${{ github.sha }}
         run: npm run export:android
+      - name: Audit export privacy and footprint
+        run: npm run audit:exports
