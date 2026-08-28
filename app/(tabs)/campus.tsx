@@ -11,7 +11,11 @@ import * as Network from "expo-network";
 import { Card } from "@/src/components/Card";
 import { PrimaryButton } from "@/src/components/PrimaryButton";
 import { Screen } from "@/src/components/Screen";
-import { readCampusCache, writeCampusCache } from "@/src/features/campus/cache";
+import {
+  clearCampusCache,
+  readCampusCache,
+  writeCampusCache,
+} from "@/src/features/campus/cache";
 import {
   fetchCampusRoute,
   fetchCampusSnapshot,
@@ -54,6 +58,7 @@ export default function CampusScreen() {
   const [selecting, setSelecting] = useState<"from" | "to">("from");
   const [route, setRoute] = useState<RouteResult | null>(null);
   const [routing, setRouting] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
 
   const loadCampus = useCallback(async () => {
     setLoadState("loading");
@@ -133,6 +138,20 @@ export default function CampusScreen() {
     }
   }, [from, to]);
 
+  const clearOfflineCampusData = useCallback(async () => {
+    setClearingCache(true);
+    try {
+      await clearCampusCache();
+      setMessage(
+        "Offline campus cache cleared. Current on-screen public campus data stays visible until you leave or refresh.",
+      );
+    } catch {
+      setMessage("The offline campus cache could not be cleared on this device.");
+    } finally {
+      setClearingCache(false);
+    }
+  }, []);
+
   return (
     <Screen title="Campus" eyebrow="UTM INTELLIGENCE">
       <Card label="SOURCE OF TRUTH" title="Canonical Gapwise campus data">
@@ -149,6 +168,7 @@ export default function CampusScreen() {
         {message ? (
           <Text
             accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
             style={[styles.notice, { color: theme.text }]}
           >
             {message}
@@ -296,6 +316,18 @@ export default function CampusScreen() {
             ))}
           </View>
         ) : null}
+      </Card>
+
+      <Card label="STORAGE" title="Small, bounded, and clearable">
+        <Text style={[styles.body, { color: theme.textMuted }]}>
+          Gapwise keeps only a bounded, versioned public campus snapshot for
+          useful offline browsing. It does not cache private API responses here.
+        </Text>
+        <PrimaryButton
+          label={clearingCache ? "Clearing…" : "Clear offline campus cache"}
+          onPress={() => void clearOfflineCampusData()}
+          disabled={clearingCache}
+        />
       </Card>
 
       <Card label="PRIVACY" title="No background location required">
