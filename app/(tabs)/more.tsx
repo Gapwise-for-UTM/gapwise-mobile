@@ -26,7 +26,13 @@ function Row({ label, onPress }: { label: string; onPress: () => void }) {
       ]}
     >
       <Text style={[styles.rowText, { color: theme.text }]}>{label}</Text>
-      <Text style={[styles.chevron, { color: theme.textMuted }]}>›</Text>
+      <Text
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+        style={[styles.chevron, { color: theme.textMuted }]}
+      >
+        ›
+      </Text>
     </Pressable>
   );
 }
@@ -123,6 +129,19 @@ export default function MoreScreen() {
         ) : null}
       </Card>
 
+      <Card label="AI & MCP" title="Explicit handoff, never silent authority">
+        <Text style={[styles.body, { color: theme.textMuted }]}>
+          Gapwise AI opens separately. This app does not attach your timetable,
+          account session, cloud payloads, or local identifiers to that handoff.
+          AI suggestions cannot silently rewrite authoritative academic
+          meetings.
+        </Text>
+        <Row
+          label="Open Gapwise AI"
+          onPress={() => void Linking.openURL("https://ai.gapwise.ca")}
+        />
+      </Card>
+
       <Card label="BUILD" title="Know exactly what you’re testing">
         <Text style={[styles.body, { color: theme.textMuted }]}>
           Diagnostics expose non-secret build, channel, platform, API, and
@@ -176,6 +195,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 4,
   },
-  rowText: { fontSize: 16, fontWeight: "600" },
+  rowText: { fontSize: 16, fontWeight: "600", flexShrink: 1 },
   chevron: { fontSize: 28, lineHeight: 28 },
 });

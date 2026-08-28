@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: mobile-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -28,6 +32,10 @@ jobs:
         run: npm test
       - name: Formatting
         run: npm run format:check
+      - name: Source privacy audit
+        run: npm run audit:source
+      - name: Production dependency security audit
+        run: npm audit --omit=dev --audit-level=high
       - name: Expo Doctor
         run: npx expo-doctor@latest
       - name: Bundle iOS

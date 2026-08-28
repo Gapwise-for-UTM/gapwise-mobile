@@ -5,12 +5,17 @@ import type { CampusSnapshot } from "./types";
 const CACHE_META_KEY = "gapwise.mobile.campus.v1.meta";
 const CACHE_CHUNK_PREFIX = "gapwise.mobile.campus.v1.chunk.";
 const CACHE_CHUNK_SIZE = 1800;
+const MAX_CACHE_CHUNKS = 128;
 
 type CacheMeta = { version: 1; chunks: number };
 
+function validChunkCount(value: number) {
+  return Number.isInteger(value) && value >= 1 && value <= MAX_CACHE_CHUNKS;
+}
+
 async function deleteChunks(count: number) {
   await Promise.all(
-    Array.from({ length: count }, (_, index) =>
+    Array.from({ length: Math.min(count, MAX_CACHE_CHUNKS) }, (_, index) =>
       SecureStore.deleteItemAsync(`${CACHE_CHUNK_PREFIX}${index}`),
     ),
   );
@@ -26,7 +31,7 @@ export async function readCampusCache(): Promise<CampusSnapshot | null> {
   } catch {
     return null;
   }
-  if (meta.version !== 1 || !Number.isInteger(meta.chunks) || meta.chunks < 1) {
+  if (meta.version !== 1 || !validChunkCount(meta.chunks)) {
     return null;
   }
 
@@ -51,12 +56,17 @@ export async function writeCampusCache(
 ): Promise<void> {
   const previousRawMeta = await SecureStore.getItemAsync(CACHE_META_KEY);
   let previousChunks = 0;
+  let previousMetaCorrupt = false;
   if (previousRawMeta) {
     try {
       const previous = JSON.parse(previousRawMeta) as CacheMeta;
-      previousChunks = Number.isInteger(previous.chunks) ? previous.chunks : 0;
+      if (previous.version === 1 && validChunkCount(previous.chunks)) {
+        previousChunks = previous.chunks;
+      } else {
+        previousMetaCorrupt = true;
+      }
     } catch {
-      previousChunks = 0;
+      previousMetaCorrupt = true;
     }
   }
 
@@ -64,6 +74,16 @@ export async function writeCampusCache(
     JSON.stringify(snapshot),
     CACHE_CHUNK_SIZE,
   );
+  if (chunks.length > MAX_CACHE_CHUNKS) {
+    throw new Error(
+      "Campus snapshot exceeds the bounded offline cache budget.",
+    );
+  }
+
+  if (previousMetaCorrupt) {
+    await deleteChunks(MAX_CACHE_CHUNKS);
+  }
+
   await Promise.all(
     chunks.map((chunk, index) =>
       SecureStore.setItemAsync(`${CACHE_CHUNK_PREFIX}${index}`, chunk, {
@@ -89,16 +109,9 @@ export async function writeCampusCache(
 }
 
 export async function clearCampusCache(): Promise<void> {
-  const rawMeta = await SecureStore.getItemAsync(CACHE_META_KEY);
-  if (rawMeta) {
-    try {
-      const meta = JSON.parse(rawMeta) as CacheMeta;
-      if (Number.isInteger(meta.chunks) && meta.chunks > 0) {
-        await deleteChunks(meta.chunks);
-      }
-    } catch {
-      // Delete metadata even when an interrupted write left it unreadable.
-    }
-  }
+  // Always sweep the entire bounded namespace. A prior interrupted shrink can
+  // leave a valid smaller metadata count alongside orphaned higher-index chunks;
+  // trusting that count here would make an explicit clear incomplete.
+  await deleteChunks(MAX_CACHE_CHUNKS);
   await SecureStore.deleteItemAsync(CACHE_META_KEY);
 }
