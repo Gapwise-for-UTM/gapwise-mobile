@@ -70,7 +70,9 @@ export async function writeCampusCache(
     CACHE_CHUNK_SIZE,
   );
   if (chunks.length > MAX_CACHE_CHUNKS) {
-    throw new Error("Campus snapshot exceeds the bounded offline cache budget.");
+    throw new Error(
+      "Campus snapshot exceeds the bounded offline cache budget.",
+    );
   }
 
   await Promise.all(
