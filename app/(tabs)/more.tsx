@@ -133,7 +133,8 @@ export default function MoreScreen() {
         <Text style={[styles.body, { color: theme.textMuted }]}>
           Gapwise AI opens separately. This app does not attach your timetable,
           account session, cloud payloads, or local identifiers to that handoff.
-          AI suggestions cannot silently rewrite authoritative academic meetings.
+          AI suggestions cannot silently rewrite authoritative academic
+          meetings.
         </Text>
         <Row
           label="Open Gapwise AI"
