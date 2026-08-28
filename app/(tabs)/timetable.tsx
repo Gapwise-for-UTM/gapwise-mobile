@@ -3,11 +3,11 @@ import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import { Card } from "@/src/components/Card";
 import { PrimaryButton } from "@/src/components/PrimaryButton";
 import { Screen } from "@/src/components/Screen";
-import { timetableShareText } from "@/src/features/timetable/export";
 import {
   formatDuration,
   formatTime,
   locationLabel,
+  timetableShareText,
   WEEKDAYS,
   type Term,
 } from "@/src/features/timetable/model";
