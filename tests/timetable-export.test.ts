@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  timetableShareText,
-  type Meeting,
-} from "../src/features/timetable/model.ts";
+import { timetableShareText, type Meeting } from "../src/features/timetable/model.ts";
 
 const meetings: Meeting[] = [
   {
