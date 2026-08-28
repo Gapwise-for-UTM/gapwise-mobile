@@ -24,7 +24,10 @@ async function filesUnder(root) {
     for (const entry of await readdir(current, { withFileTypes: true })) {
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) await visit(full);
-      else if (entry.isFile() && sourceExtensions.has(path.extname(entry.name))) {
+      else if (
+        entry.isFile() &&
+        sourceExtensions.has(path.extname(entry.name))
+      ) {
         result.push(full);
       }
     }
