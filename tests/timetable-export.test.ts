@@ -67,16 +67,13 @@ test("exports only the selected term in stable weekday/time order", () => {
   );
 });
 
-test(
-  "does not expose internal meeting identifiers or unrelated term data",
-  () => {
-    const text = timetableShareText(meetings, "Fall");
-    assert.equal(text.includes("private-internal-id"), false);
-    assert.equal(text.includes("winter-id"), false);
-    assert.equal(text.includes("CSC111H5"), false);
-    assert.equal(text.includes("LEC0101"), false);
-  },
-);
+test("does not expose internal IDs or unrelated term data", () => {
+  const text = timetableShareText(meetings, "Fall");
+  assert.equal(text.includes("private-internal-id"), false);
+  assert.equal(text.includes("winter-id"), false);
+  assert.equal(text.includes("CSC111H5"), false);
+  assert.equal(text.includes("LEC0101"), false);
+});
 
 test("empty term export is explicit and compact", () => {
   assert.equal(
