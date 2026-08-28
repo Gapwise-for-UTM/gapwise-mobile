@@ -13,6 +13,7 @@
     "doctor": "npx expo-doctor@latest",
     "export:ios": "expo export --platform ios --output-dir dist/ios",
     "export:android": "expo export --platform android --output-dir dist/android",
+    "audit:exports": "node script/audit-export.mjs dist/ios dist/android",
     "check": "npm run typecheck && npm test && npm run format:check"
   },
   "dependencies": {
