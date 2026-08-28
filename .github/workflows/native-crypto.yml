@@ -1,0 +1,96 @@
+name: Native crypto compile
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "modules/gapwise-device-crypto/**"
+      - "app.json"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/native-crypto.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx expo prebuild --platform android --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+      - name: Compile Android app
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug --no-daemon 2>&1 | tee ../android-compile.log
+        working-directory: android
+      - name: Upload Android compile diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-compile-log
+          path: android-compile.log
+          if-no-files-found: ignore
+          retention-days: 3
+
+  android-pre35-interop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx expo prebuild --platform android --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+      - name: Run API 34 RSA-OAEP-SHA256 interoperability tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          disable-animations: true
+          script: cd android && ./gradlew :gapwise-device-crypto:connectedDebugAndroidTest --no-daemon
+
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx expo prebuild --platform ios --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+      - run: npx pod-install ios
+      - name: Compile iOS app without signing
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ios/Gapwise.xcworkspace \
+            -scheme Gapwise \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tee ios-compile.log
+      - name: Upload iOS compile diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-compile-log
+          path: ios-compile.log
+          if-no-files-found: ignore
+          retention-days: 3
