@@ -13,8 +13,9 @@
     "doctor": "npx expo-doctor@latest",
     "export:ios": "expo export --platform ios --output-dir dist/ios",
     "export:android": "expo export --platform android --output-dir dist/android",
+    "audit:source": "node script/audit-source-privacy.mjs",
     "audit:exports": "node script/audit-export.mjs dist/ios dist/android",
-    "check": "npm run typecheck && npm test && npm run format:check"
+    "check": "npm run typecheck && npm test && npm run format:check && npm run audit:source"
   },
   "dependencies": {
     "expo": "~57.0.0",
