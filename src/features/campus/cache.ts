@@ -56,12 +56,17 @@ export async function writeCampusCache(
 ): Promise<void> {
   const previousRawMeta = await SecureStore.getItemAsync(CACHE_META_KEY);
   let previousChunks = 0;
+  let previousMetaCorrupt = false;
   if (previousRawMeta) {
     try {
       const previous = JSON.parse(previousRawMeta) as CacheMeta;
-      previousChunks = validChunkCount(previous.chunks) ? previous.chunks : 0;
+      if (previous.version === 1 && validChunkCount(previous.chunks)) {
+        previousChunks = previous.chunks;
+      } else {
+        previousMetaCorrupt = true;
+      }
     } catch {
-      previousChunks = 0;
+      previousMetaCorrupt = true;
     }
   }
 
@@ -73,6 +78,10 @@ export async function writeCampusCache(
     throw new Error(
       "Campus snapshot exceeds the bounded offline cache budget.",
     );
+  }
+
+  if (previousMetaCorrupt) {
+    await deleteChunks(MAX_CACHE_CHUNKS);
   }
 
   await Promise.all(
@@ -101,15 +110,18 @@ export async function writeCampusCache(
 
 export async function clearCampusCache(): Promise<void> {
   const rawMeta = await SecureStore.getItemAsync(CACHE_META_KEY);
+  let chunksToDelete = MAX_CACHE_CHUNKS;
   if (rawMeta) {
     try {
       const meta = JSON.parse(rawMeta) as CacheMeta;
-      if (validChunkCount(meta.chunks)) {
-        await deleteChunks(meta.chunks);
+      if (meta.version === 1 && validChunkCount(meta.chunks)) {
+        chunksToDelete = meta.chunks;
       }
     } catch {
-      // Delete metadata even when an interrupted write left it unreadable.
+      // A corrupt/interrupted metadata record can leave orphaned chunks behind.
     }
   }
+
+  await deleteChunks(chunksToDelete);
   await SecureStore.deleteItemAsync(CACHE_META_KEY);
 }
