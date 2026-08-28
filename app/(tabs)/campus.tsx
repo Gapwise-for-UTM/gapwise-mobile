@@ -146,7 +146,9 @@ export default function CampusScreen() {
         "Offline campus cache cleared. Current on-screen public campus data stays visible until you leave or refresh.",
       );
     } catch {
-      setMessage("The offline campus cache could not be cleared on this device.");
+      setMessage(
+        "The offline campus cache could not be cleared on this device.",
+      );
     } finally {
       setClearingCache(false);
     }
