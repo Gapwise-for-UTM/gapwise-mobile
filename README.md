@@ -101,9 +101,9 @@ For the broader trust model, see the main Gapwise [`SECURITY.md`](https://github
 
 ---
 
-## Development roadmap
+## Delivered roadmap
 
-Mobile development is tracked under the Linear project **Gapwise — Mobile** and is being delivered sequentially so each stage can be tested and reviewed before the next one changes the surface.
+Mobile development is tracked under the Linear project **Gapwise — Mobile**. The repository now contains the implementation and release-hardening work from all six planned phases; future changes should preserve the same source-of-truth, privacy, accessibility, and release-safety boundaries.
 
 1. **Foundation** — Expo/React Native bootstrap, design system, navigation, diagnostics, and CI.
 2. **Student day** — Today, timetable, gap planning, local persistence, and offline-first restoration.
@@ -118,9 +118,9 @@ App Store / Google Play account enrollment, signing agreements, paid developer p
 
 ## Development
 
-The project uses the Expo toolchain and is designed to stay Expo Go-compatible until native-only functionality creates a concrete reason for a development client.
+The project uses the Expo toolchain. The checked-in EAS configuration provides development-client, preview, iOS-simulator, and production build profiles so native and release behavior can be tested without treating Expo Go as the production runtime.
 
-Once the Phase 1 application files land:
+To run the project locally:
 
 ```bash
 git clone https://github.com/andrewmuratov/gapwise-mobile.git
@@ -129,13 +129,13 @@ npm install
 npx expo start
 ```
 
-The repository will also expose project-local Codex run actions and EAS development/preview/production profiles. Cloud submission actions are deliberately not one-click development commands.
+The repository includes project-local automation plus EAS development, preview, simulator, and production profiles. Cloud submission remains an explicit release action rather than a one-click development command.
 
 ---
 
 ## Verification
 
-Credential-free CI is expected to cover the checks that can run without Apple or Google signing credentials, including:
+Credential-free CI covers the checks that can run without Apple or Google signing credentials, including:
 
 ```text
 dependency install
