@@ -2,11 +2,30 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const roots = ["app", "src", "modules"];
-const sourceExtensions = new Set([".js", ".jsx", ".mjs", ".ts", ".tsx"]);
+const sourceExtensions = new Set([
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".ts",
+  ".tsx",
+  ".swift",
+  ".kt",
+  ".java",
+  ".m",
+  ".mm",
+]);
 const forbiddenPatterns = [
   {
-    label: "runtime console logging",
+    label: "JavaScript runtime console logging",
     pattern: /\bconsole\.(?:log|debug|info|warn|error)\s*\(/,
+  },
+  {
+    label: "Android runtime logging",
+    pattern: /\bLog\.(?:v|d|i|w|e|wtf)\s*\(/,
+  },
+  {
+    label: "native stdout logging",
+    pattern: /\b(?:NSLog|print|println)\s*\(/,
   },
   {
     label: "privileged Supabase secret marker",
