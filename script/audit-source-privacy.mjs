@@ -29,7 +29,11 @@ const forbiddenPatterns = [
   },
   {
     label: "privileged Supabase secret marker",
-    pattern: /\b(?:SUPABASE_SERVICE_ROLE|sb_secret_)\b/,
+    // Match both environment-variable names and actual secret-key prefixes.
+    // Do not use a trailing word boundary after an underscore: `_` and the
+    // following key character are both word characters, which would let a
+    // real `sb_secret_...` value evade the audit.
+    pattern: /\bSUPABASE_SERVICE_ROLE(?:_KEY)?\b|\bsb_secret_[A-Za-z0-9._-]+/,
   },
   {
     label: "embedded private-key material",
