@@ -165,10 +165,10 @@ export default function TimetableScreen() {
                 )}, ${formatTime(gap.startTime)} to ${formatTime(gap.endTime)}`}
                 style={[styles.gapRow, { borderColor: theme.border }]}
               >
-                <Text style={[styles.gapLabel, { color: theme.success }]}> 
+                <Text style={[styles.gapLabel, { color: theme.success }]}>
                   GAP · {formatDuration(gap.durationMinutes)}
                 </Text>
-                <Text style={[styles.place, { color: theme.textMuted }]}> 
+                <Text style={[styles.place, { color: theme.textMuted }]}>
                   {formatTime(gap.startTime)}–{formatTime(gap.endTime)}
                 </Text>
               </View>
@@ -179,7 +179,7 @@ export default function TimetableScreen() {
 
       {termMeetings.length > 0 ? (
         <Card label="SHARE" title={`Share ${activeTerm} timetable`}>
-          <Text style={[styles.body, { color: theme.textMuted }]}> 
+          <Text style={[styles.body, { color: theme.textMuted }]}>
             Opens the system share sheet only when you ask. The export contains
             visible course, time, activity, and location fields only—never your
             account, session, cloud metadata, or internal record IDs.
