@@ -38,7 +38,9 @@ const sourceSha =
   "local/unknown";
 
 if (process.env.CI && !/^[0-9a-f]{40}$/i.test(sourceSha)) {
-  console.error("release manifest: CI source commit must be an exact 40-character git SHA");
+  console.error(
+    "release manifest: CI source commit must be an exact 40-character git SHA",
+  );
   process.exit(1);
 }
 
