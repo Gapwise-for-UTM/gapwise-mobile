@@ -18,12 +18,24 @@ function Value({ label, value }: { label: string; value: string }) {
   );
 }
 
+function extraString(key: string, fallback: string) {
+  const value = Constants.expoConfig?.extra?.[key];
+  return typeof value === "string" && value.length > 0 ? value : fallback;
+}
+
 export default function DiagnosticsScreen() {
   const theme = useGapwiseTheme();
   const network = useNetworkState();
   const version = Constants.expoConfig?.version ?? "unknown";
-  const channel = process.env.EXPO_PUBLIC_GAPWISE_CHANNEL ?? "development";
-  const commit = process.env.EXPO_PUBLIC_GAPWISE_COMMIT_SHA ?? "local/unknown";
+  const buildProfile = extraString(
+    "buildProfile",
+    process.env.EXPO_PUBLIC_GAPWISE_CHANNEL ?? "development",
+  );
+  const commit = extraString(
+    "commitSha",
+    process.env.EXPO_PUBLIC_GAPWISE_COMMIT_SHA ?? "local/unknown",
+  );
+  const buildId = extraString("buildId", "local");
 
   return (
     <SafeAreaView
@@ -54,8 +66,9 @@ export default function DiagnosticsScreen() {
               : "offline"
         }
       />
-      <Value label="Channel" value={channel} />
+      <Value label="Build profile" value={buildProfile} />
       <Value label="Commit" value={commit} />
+      <Value label="EAS build ID" value={buildId} />
       <Value label="API" value={GAPWISE_API_BASE_URL} />
     </SafeAreaView>
   );
