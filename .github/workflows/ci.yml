@@ -34,6 +34,8 @@ jobs:
         run: npm run format:check
       - name: Source privacy audit
         run: npm run audit:source
+      - name: Release configuration audit
+        run: npm run audit:release
       - name: Production dependency security audit
         run: npm audit --omit=dev --audit-level=high
       - name: Expo Doctor
@@ -50,3 +52,14 @@ jobs:
         run: npm run export:android
       - name: Audit export privacy and footprint
         run: npm run audit:exports
+      - name: Write exact-source release provenance manifest
+        env:
+          EXPO_PUBLIC_GAPWISE_COMMIT_SHA: ${{ github.sha }}
+        run: npm run release:manifest
+      - name: Preserve release provenance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-release-provenance-${{ github.sha }}
+          path: dist/release-manifest.json
+          if-no-files-found: error
+          retention-days: 14
