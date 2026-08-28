@@ -27,7 +27,9 @@ jobs:
       - name: Unit tests
         run: npm test
       - name: Formatting
-        run: npm run format:check
+        run: |
+          npx prettier --write app src modules script
+          git diff --exit-code -- app src modules script
       - name: Source privacy audit
         run: npm run audit:source
       - name: Expo Doctor
