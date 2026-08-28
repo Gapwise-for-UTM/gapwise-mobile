@@ -163,7 +163,10 @@ export function timetableShareText(
     );
   }
 
-  lines.push("", "Shared intentionally from Gapwise. No account data included.");
+  lines.push(
+    "",
+    "Shared intentionally from Gapwise. No account data included.",
+  );
   return lines.join("\n");
 }
 
