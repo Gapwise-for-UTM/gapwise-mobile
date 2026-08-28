@@ -1,0 +1,30 @@
+name: Format diagnostics
+
+on:
+  push:
+    branches: [feat/mobile-phase-6-release-hardening]
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Generate formatting patch
+        run: |
+          npx prettier --write .
+          git diff -- . > prettier.patch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prettier-normalization
+          path: prettier.patch
+          if-no-files-found: error
+          retention-days: 1
