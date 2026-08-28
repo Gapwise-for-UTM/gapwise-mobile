@@ -41,6 +41,27 @@ jobs:
           if-no-files-found: ignore
           retention-days: 3
 
+  android-pre35-interop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx expo prebuild --platform android --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+      - name: Run API 34 RSA-OAEP-SHA256 interoperability tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          disable-animations: true
+          script: cd android && ./gradlew :gapwise-device-crypto:connectedDebugAndroidTest --no-daemon
+
   ios:
     runs-on: macos-26
     timeout-minutes: 35
