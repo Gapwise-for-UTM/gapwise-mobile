@@ -1,7 +1,9 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import { Card } from "@/src/components/Card";
 import { PrimaryButton } from "@/src/components/PrimaryButton";
 import { Screen } from "@/src/components/Screen";
+import { timetableShareText } from "@/src/features/timetable/export";
 import {
   formatDuration,
   formatTime,
@@ -16,6 +18,8 @@ const TERMS: Term[] = ["Fall", "Winter", "Summer"];
 
 export default function TimetableScreen() {
   const theme = useGapwiseTheme();
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
   const {
     meetings,
     gaps,
@@ -30,6 +34,24 @@ export default function TimetableScreen() {
     (meeting) => meeting.term === activeTerm,
   );
 
+  const shareTimetable = async () => {
+    if (termMeetings.length === 0 || sharing) return;
+    setSharing(true);
+    setShareError(null);
+    try {
+      await Share.share({
+        title: `Gapwise · ${activeTerm} timetable`,
+        message: timetableShareText(meetings, activeTerm),
+      });
+    } catch {
+      setShareError(
+        "Gapwise could not open the share sheet. Your timetable stayed on this device.",
+      );
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <Screen title="Timetable" eyebrow="LOCAL STUDENT DAY">
       <Card label="PRIVACY" title="Saved on this device">
@@ -42,6 +64,7 @@ export default function TimetableScreen() {
             <Pressable
               key={term}
               accessibilityRole="button"
+              accessibilityLabel={`Show ${term} timetable`}
               accessibilityState={{ selected: activeTerm === term }}
               onPress={() => setActiveTerm(term)}
               style={[
@@ -67,7 +90,11 @@ export default function TimetableScreen() {
       </Card>
 
       {!hydrated ? (
-        <Text style={[styles.body, { color: theme.textMuted }]}>
+        <Text
+          accessibilityRole="text"
+          accessibilityLiveRegion="polite"
+          style={[styles.body, { color: theme.textMuted }]}
+        >
           Restoring timetable…
         </Text>
       ) : null}
@@ -101,12 +128,18 @@ export default function TimetableScreen() {
             {dayMeetings.map((meeting) => (
               <View
                 key={meeting.id}
+                accessible
+                accessibilityLabel={`${meeting.courseCode} ${meeting.activityType}, ${formatTime(meeting.startTime)} to ${formatTime(meeting.endTime)}, ${locationLabel(meeting)}`}
                 style={[
                   styles.row,
                   { backgroundColor: theme.surface, borderColor: theme.border },
                 ]}
               >
-                <View style={[styles.dot, { backgroundColor: theme.blue }]} />
+                <View
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                  style={[styles.dot, { backgroundColor: theme.blue }]}
+                />
                 <View style={styles.copy}>
                   <Text style={[styles.time, { color: theme.textMuted }]}>
                     {formatTime(meeting.startTime)}–
@@ -124,6 +157,8 @@ export default function TimetableScreen() {
             {dayGaps.map((gap) => (
               <View
                 key={gap.id}
+                accessible
+                accessibilityLabel={`Gap, ${formatDuration(gap.durationMinutes)}, ${formatTime(gap.startTime)} to ${formatTime(gap.endTime)}`}
                 style={[styles.gapRow, { borderColor: theme.border }]}
               >
                 <Text style={[styles.gapLabel, { color: theme.success }]}>
@@ -137,6 +172,29 @@ export default function TimetableScreen() {
           </View>
         );
       })}
+
+      {termMeetings.length > 0 ? (
+        <Card label="SHARE" title={`Share ${activeTerm} timetable`}>
+          <Text style={[styles.body, { color: theme.textMuted }]}>
+            Opens the system share sheet only when you ask. The export contains
+            visible course, time, activity, and location fields only—never your
+            account, session, cloud metadata, or internal record IDs.
+          </Text>
+          <PrimaryButton
+            label={sharing ? "Opening share sheet…" : "Share timetable"}
+            onPress={() => void shareTimetable()}
+            disabled={sharing}
+          />
+          {shareError ? (
+            <Text
+              accessibilityRole="alert"
+              style={[styles.warning, { color: theme.warning }]}
+            >
+              {shareError}
+            </Text>
+          ) : null}
+        </Card>
+      ) : null}
 
       {meetings.length > 0 ? (
         <PrimaryButton label="Clear local timetable" onPress={clear} />
