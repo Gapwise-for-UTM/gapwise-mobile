@@ -42,7 +42,7 @@ export default function DiagnosticsScreen() {
       style={[styles.screen, { backgroundColor: theme.background }]}
       edges={["bottom"]}
     >
-      <Text style={[styles.note, { color: theme.textMuted }]}> 
+      <Text style={[styles.note, { color: theme.textMuted }]}>
         Non-secret diagnostic information only. Tokens and credentials are never
         displayed here.
       </Text>
