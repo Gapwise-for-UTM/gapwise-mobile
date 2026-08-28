@@ -28,6 +28,8 @@ jobs:
         run: npm test
       - name: Formatting
         run: npm run format:check
+      - name: Source privacy audit
+        run: npm run audit:source
       - name: Expo Doctor
         run: npx expo-doctor@latest
       - name: Bundle iOS
