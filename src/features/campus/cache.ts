@@ -109,19 +109,9 @@ export async function writeCampusCache(
 }
 
 export async function clearCampusCache(): Promise<void> {
-  const rawMeta = await SecureStore.getItemAsync(CACHE_META_KEY);
-  let chunksToDelete = MAX_CACHE_CHUNKS;
-  if (rawMeta) {
-    try {
-      const meta = JSON.parse(rawMeta) as CacheMeta;
-      if (meta.version === 1 && validChunkCount(meta.chunks)) {
-        chunksToDelete = meta.chunks;
-      }
-    } catch {
-      // A corrupt/interrupted metadata record can leave orphaned chunks behind.
-    }
-  }
-
-  await deleteChunks(chunksToDelete);
+  // Always sweep the entire bounded namespace. A prior interrupted shrink can
+  // leave a valid smaller metadata count alongside orphaned higher-index chunks;
+  // trusting that count here would make an explicit clear incomplete.
+  await deleteChunks(MAX_CACHE_CHUNKS);
   await SecureStore.deleteItemAsync(CACHE_META_KEY);
 }
