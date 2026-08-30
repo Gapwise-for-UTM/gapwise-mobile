@@ -9,6 +9,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/native-crypto.yml"
+      - ".github/workflows/cleanup-merged-branches.yml"
 
 concurrency:
   group: native-crypto-${{ github.workflow }}-${{ github.ref }}
