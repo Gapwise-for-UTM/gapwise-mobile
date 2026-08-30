@@ -43,7 +43,7 @@ jobs:
       - name: Production dependency security audit
         run: npm audit --omit=dev --audit-level=high
       - name: Expo Doctor
-        run: npx expo-doctor@latest
+        run: npm run doctor
       - name: Bundle iOS
         env:
           EXPO_PUBLIC_GAPWISE_CHANNEL: ci
