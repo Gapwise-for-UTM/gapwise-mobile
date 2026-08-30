@@ -1,6 +1,9 @@
+import { withRequestTimeout } from "@/src/lib/request-timeout";
 import { AUTH_CALLBACK_URL, getPublicSupabaseConfig } from "./config";
 import { buildMagicLinkRequest, isAuthCallbackUrl } from "./model";
 import type { AuthSession, AuthUser } from "./types";
+
+const AUTH_REQUEST_TIMEOUT_MS = 15_000;
 
 function requireConfig() {
   const config = getPublicSupabaseConfig();
@@ -18,6 +21,16 @@ function authHeaders() {
   };
 }
 
+function authFetch(input: string, init?: RequestInit) {
+  return withRequestTimeout(
+    (signal) => fetch(input, { ...init, signal }),
+    {
+      timeoutMs: AUTH_REQUEST_TIMEOUT_MS,
+      timeoutMessage: "The authentication request timed out.",
+    },
+  );
+}
+
 async function readJson(response: Response) {
   const text = await response.text();
   if (!text) return null;
@@ -31,7 +44,7 @@ async function readJson(response: Response) {
 export async function requestMagicLink(email: string) {
   const config = requireConfig();
   const request = buildMagicLinkRequest(config.url, email, AUTH_CALLBACK_URL);
-  const response = await fetch(request.url, {
+  const response = await authFetch(request.url, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(request.body),
@@ -103,7 +116,7 @@ export async function refreshSession(
   refreshToken: string,
 ): Promise<AuthSession> {
   const config = requireConfig();
-  const response = await fetch(
+  const response = await authFetch(
     `${config.url}/auth/v1/token?grant_type=refresh_token`,
     {
       method: "POST",
@@ -139,7 +152,7 @@ export async function refreshSession(
 
 export async function getUser(accessToken: string): Promise<AuthUser> {
   const config = requireConfig();
-  const response = await fetch(`${config.url}/auth/v1/user`, {
+  const response = await authFetch(`${config.url}/auth/v1/user`, {
     headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
   });
   const body = await readJson(response);
@@ -155,7 +168,7 @@ export async function getUser(accessToken: string): Promise<AuthUser> {
 
 export async function revokeSession(accessToken: string) {
   const config = requireConfig();
-  const response = await fetch(`${config.url}/auth/v1/logout`, {
+  const response = await authFetch(`${config.url}/auth/v1/logout`, {
     method: "POST",
     headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
   });
