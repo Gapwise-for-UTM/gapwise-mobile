@@ -140,10 +140,14 @@ export function TimetableProvider({ children }: PropsWithChildren) {
     [hydrated],
   );
 
+  // Gap derivation groups and sorts the full timetable. Keep that work tied to
+  // actual schedule changes instead of repeating it for term tabs or status UI.
+  const gaps = useMemo(() => gapsForMeetings(meetings), [meetings]);
+
   const value = useMemo<TimetableState>(
     () => ({
       meetings,
-      gaps: gapsForMeetings(meetings),
+      gaps,
       activeTerm,
       hydrated,
       persistenceError,
@@ -155,6 +159,7 @@ export function TimetableProvider({ children }: PropsWithChildren) {
     [
       activeTerm,
       clear,
+      gaps,
       hydrated,
       loadSample,
       meetings,
