@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import { Card } from "@/src/components/Card";
 import { PrimaryButton } from "@/src/components/PrimaryButton";
@@ -30,8 +30,31 @@ export default function TimetableScreen() {
     hydrated,
     persistenceError,
   } = useTimetable();
-  const termMeetings = meetings.filter(
-    (meeting) => meeting.term === activeTerm,
+  const termMeetings = useMemo(
+    () => meetings.filter((meeting) => meeting.term === activeTerm),
+    [activeTerm, meetings],
+  );
+  const meetingsByDay = useMemo(
+    () =>
+      new Map(
+        WEEKDAYS.map((day) => [
+          day,
+          termMeetings
+            .filter((meeting) => meeting.weekday === day)
+            .sort((a, b) => a.startTime - b.startTime),
+        ]),
+      ),
+    [termMeetings],
+  );
+  const gapsByDay = useMemo(
+    () =>
+      new Map(
+        WEEKDAYS.map((day) => [
+          day,
+          gaps.filter((gap) => gap.term === activeTerm && gap.weekday === day),
+        ]),
+      ),
+    [activeTerm, gaps],
   );
 
   const shareTimetable = async () => {
@@ -110,13 +133,9 @@ export default function TimetableScreen() {
       ) : null}
 
       {WEEKDAYS.map((day) => {
-        const dayMeetings = termMeetings
-          .filter((meeting) => meeting.weekday === day)
-          .sort((a, b) => a.startTime - b.startTime);
+        const dayMeetings = meetingsByDay.get(day) ?? [];
         if (dayMeetings.length === 0) return null;
-        const dayGaps = gaps.filter(
-          (gap) => gap.term === activeTerm && gap.weekday === day,
-        );
+        const dayGaps = gapsByDay.get(day) ?? [];
         return (
           <View key={day} style={styles.day}>
             <Text
