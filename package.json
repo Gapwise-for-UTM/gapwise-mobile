@@ -20,8 +20,8 @@
     "check": "npm run typecheck && npm test && npm run format:check && npm run audit:source && npm run audit:release"
   },
   "dependencies": {
-    "expo": "~57.0.0",
-    "expo-constants": "~57.0.14",
+    "expo": "~57.0.18",
+    "expo-constants": "~57.0.16",
     "expo-device": "~57.0.1",
     "expo-haptics": "~57.0.1",
     "expo-linking": "~57.0.7",
