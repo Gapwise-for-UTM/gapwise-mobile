@@ -13,19 +13,26 @@ export async function gapwiseFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await withRequestTimeout(
-    (signal) =>
-      fetch(`${GAPWISE_API_BASE_URL}/${path.replace(/^\//, "")}`, {
-        ...init,
-        signal,
-        headers: { Accept: "application/json", ...init?.headers },
-      }),
-    { timeoutMessage: "Gapwise API request timed out." },
+  return withRequestTimeout(
+    async (signal) => {
+      const response = await fetch(
+        `${GAPWISE_API_BASE_URL}/${path.replace(/^\//, "")}`,
+        {
+          ...init,
+          signal,
+          headers: { Accept: "application/json", ...init?.headers },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Gapwise API request failed (${response.status})`);
+      }
+
+      return (await response.json()) as T;
+    },
+    {
+      signal: init?.signal,
+      timeoutMessage: "Gapwise API request timed out.",
+    },
   );
-
-  if (!response.ok) {
-    throw new Error(`Gapwise API request failed (${response.status})`);
-  }
-
-  return (await response.json()) as T;
 }
