@@ -1,5 +1,6 @@
 import Constants from "expo-constants";
 import { fetch } from "expo/fetch";
+import { withRequestTimeout } from "./request-timeout";
 
 const configuredBase =
   process.env.EXPO_PUBLIC_GAPWISE_API_BASE_URL ??
@@ -12,12 +13,14 @@ export async function gapwiseFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(
-    `${GAPWISE_API_BASE_URL}/${path.replace(/^\//, "")}`,
-    {
-      ...init,
-      headers: { Accept: "application/json", ...init?.headers },
-    },
+  const response = await withRequestTimeout(
+    (signal) =>
+      fetch(`${GAPWISE_API_BASE_URL}/${path.replace(/^\//, "")}`, {
+        ...init,
+        signal,
+        headers: { Accept: "application/json", ...init?.headers },
+      }),
+    { timeoutMessage: "Gapwise API request timed out." },
   );
 
   if (!response.ok) {
