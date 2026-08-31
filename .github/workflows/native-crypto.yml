@@ -77,17 +77,19 @@ jobs:
           arch: x86_64
           disable-animations: true
           script: |
-            set -euo pipefail
+            set -eu
             adb wait-for-device
-            for attempt in $(seq 1 60); do
+            attempt=1
+            while [ "$attempt" -le 60 ]; do
               if adb shell service check package 2>/dev/null | grep -q "Service package: found" && \
                 adb shell cmd package list packages >/dev/null 2>&1; then
                 break
               fi
-              if [[ "$attempt" -eq 60 ]]; then
+              if [ "$attempt" -eq 60 ]; then
                 echo "Android package manager did not become ready." >&2
                 exit 1
               fi
+              attempt=$((attempt + 1))
               sleep 2
             done
             cd android
