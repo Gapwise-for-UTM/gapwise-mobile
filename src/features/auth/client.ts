@@ -48,7 +48,8 @@ export async function requestMagicLink(email: string) {
       headers: authHeaders(),
       body: JSON.stringify(request.body),
     });
-    if (!response.ok) throw new Error("Gapwise could not send the sign-in link.");
+    if (!response.ok)
+      throw new Error("Gapwise could not send the sign-in link.");
   });
 }
 
