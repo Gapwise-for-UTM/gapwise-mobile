@@ -49,7 +49,8 @@ test("withRequestTimeout preserves caller cancellation", async () => {
   caller.abort();
   await assert.rejects(
     pending,
-    (error: unknown) => error instanceof DOMException && error.name === "AbortError",
+    (error: unknown) =>
+      error instanceof DOMException && error.name === "AbortError",
   );
 });
 
