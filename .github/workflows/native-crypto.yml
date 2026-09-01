@@ -3,13 +3,6 @@ name: Native crypto compile
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "modules/gapwise-device-crypto/**"
-      - "app.json"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/native-crypto.yml"
-      - ".github/workflows/cleanup-merged-branches.yml"
 
 concurrency:
   group: native-crypto-${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +12,32 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      native: ${{ steps.detect.outputs.native }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: detect
+        name: Detect native-crypto inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed_files="$(git diff --name-only '${{ github.event.pull_request.base.sha }}' '${{ github.event.pull_request.head.sha }}')"
+          printf '%s\n' "$changed_files"
+
+          if printf '%s\n' "$changed_files" | grep -Eq '^(modules/gapwise-device-crypto/|app\.json$|package\.json$|package-lock\.json$|\.github/workflows/native-crypto\.yml$|\.github/workflows/cleanup-merged-branches\.yml$)'; then
+            echo 'native=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'native=false' >> "$GITHUB_OUTPUT"
+          fi
+
   android:
+    needs: changes
+    if: needs.changes.outputs.native == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -49,6 +67,8 @@ jobs:
           retention-days: 3
 
   android-pre35-interop:
+    needs: changes
+    if: needs.changes.outputs.native == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -72,6 +92,8 @@ jobs:
           script: cd android && ./gradlew :gapwise-device-crypto:connectedDebugAndroidTest --no-daemon
 
   ios:
+    needs: changes
+    if: needs.changes.outputs.native == 'true'
     runs-on: macos-26
     timeout-minutes: 35
     steps:
