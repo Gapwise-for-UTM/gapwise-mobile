@@ -83,13 +83,20 @@ jobs:
       - run: npx expo prebuild --platform android --clean --no-install
         env:
           EXPO_NO_TELEMETRY: "1"
+      - name: Enable Android emulator hardware acceleration
+        run: |
+          set -euo pipefail
+          if [[ -e /dev/kvm ]]; then
+            sudo chown "$USER" /dev/kvm
+            sudo chmod 0600 /dev/kvm
+          fi
       - name: Run API 34 RSA-OAEP-SHA256 interoperability tests
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
         with:
           api-level: 34
           arch: x86_64
           disable-animations: true
-          script: cd android && ./gradlew :gapwise-device-crypto:connectedDebugAndroidTest --no-daemon
+          script: adb wait-for-device && timeout 120 sh -c 'until adb shell service check package 2>/dev/null | grep -q "Service package: found" && adb shell cmd package list packages >/dev/null 2>&1; do sleep 2; done' && cd android && ./gradlew :gapwise-device-crypto:connectedDebugAndroidTest --no-daemon
 
   ios:
     needs: changes
