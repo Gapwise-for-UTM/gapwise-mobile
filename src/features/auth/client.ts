@@ -1,6 +1,9 @@
+import { withRequestTimeout } from "@/src/lib/request-timeout";
 import { AUTH_CALLBACK_URL, getPublicSupabaseConfig } from "./config";
 import { buildMagicLinkRequest, isAuthCallbackUrl } from "./model";
 import type { AuthSession, AuthUser } from "./types";
+
+const AUTH_REQUEST_TIMEOUT_MS = 15_000;
 
 function requireConfig() {
   const config = getPublicSupabaseConfig();
@@ -18,6 +21,13 @@ function authHeaders() {
   };
 }
 
+function authRequest<T>(operation: (signal: AbortSignal) => Promise<T>) {
+  return withRequestTimeout(operation, {
+    timeoutMs: AUTH_REQUEST_TIMEOUT_MS,
+    timeoutMessage: "The authentication request timed out.",
+  });
+}
+
 async function readJson(response: Response) {
   const text = await response.text();
   if (!text) return null;
@@ -31,12 +41,16 @@ async function readJson(response: Response) {
 export async function requestMagicLink(email: string) {
   const config = requireConfig();
   const request = buildMagicLinkRequest(config.url, email, AUTH_CALLBACK_URL);
-  const response = await fetch(request.url, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify(request.body),
+  await authRequest(async (signal) => {
+    const response = await fetch(request.url, {
+      method: "POST",
+      signal,
+      headers: authHeaders(),
+      body: JSON.stringify(request.body),
+    });
+    if (!response.ok)
+      throw new Error("Gapwise could not send the sign-in link.");
   });
-  if (!response.ok) throw new Error("Gapwise could not send the sign-in link.");
 }
 
 function parseFragment(url: string) {
@@ -103,15 +117,21 @@ export async function refreshSession(
   refreshToken: string,
 ): Promise<AuthSession> {
   const config = requireConfig();
-  const response = await fetch(
-    `${config.url}/auth/v1/token?grant_type=refresh_token`,
-    {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ refresh_token: refreshToken }),
-    },
-  );
-  const body = (await readJson(response)) as Record<string, unknown> | null;
+  const { response, body } = await authRequest(async (signal) => {
+    const nextResponse = await fetch(
+      `${config.url}/auth/v1/token?grant_type=refresh_token`,
+      {
+        method: "POST",
+        signal,
+        headers: authHeaders(),
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+    );
+    return {
+      response: nextResponse,
+      body: (await readJson(nextResponse)) as Record<string, unknown> | null,
+    };
+  });
   if (!response.ok || !body) {
     if (response.status === 400 || response.status === 401) {
       throw new Error("Session revoked.");
@@ -139,10 +159,13 @@ export async function refreshSession(
 
 export async function getUser(accessToken: string): Promise<AuthUser> {
   const config = requireConfig();
-  const response = await fetch(`${config.url}/auth/v1/user`, {
-    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
+  const { response, body } = await authRequest(async (signal) => {
+    const nextResponse = await fetch(`${config.url}/auth/v1/user`, {
+      signal,
+      headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
+    });
+    return { response: nextResponse, body: await readJson(nextResponse) };
   });
-  const body = await readJson(response);
   if (!response.ok) {
     throw new Error(
       response.status === 401
@@ -155,11 +178,14 @@ export async function getUser(accessToken: string): Promise<AuthUser> {
 
 export async function revokeSession(accessToken: string) {
   const config = requireConfig();
-  const response = await fetch(`${config.url}/auth/v1/logout`, {
-    method: "POST",
-    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
+  await authRequest(async (signal) => {
+    const response = await fetch(`${config.url}/auth/v1/logout`, {
+      method: "POST",
+      signal,
+      headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
+    });
+    if (!response.ok && response.status !== 401) {
+      throw new Error("Remote sign-out could not finish.");
+    }
   });
-  if (!response.ok && response.status !== 401) {
-    throw new Error("Remote sign-out could not finish.");
-  }
 }
