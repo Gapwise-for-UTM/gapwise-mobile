@@ -39,7 +39,7 @@
       "package": "@gapwise/sdk",
       "registries": {
         "npm": { "version": "0.1.0", "state": "published" },
-        "jsr": { "version": "0.1.0", "state": "configured_not_published" }
+        "jsr": { "version": "0.1.0", "state": "published" }
       },
       "runtimeTargets": ["node", "bun", "deno", "browser"],
       "model": "single-portable-implementation"
