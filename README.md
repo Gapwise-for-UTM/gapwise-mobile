@@ -55,17 +55,17 @@ Core functionality remains guest-first. The mobile app should be useful without 
 
 The mobile repository deliberately reuses the established Gapwise product rather than forking its semantics.
 
-| Concern              | Canonical source                                                                                                        |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| **Brand mark**       | [`andrewmuratov/gapwise/public/logo-mark.svg`](https://github.com/andrewmuratov/gapwise/blob/main/public/logo-mark.svg) |
-| **Visual system**    | [`andrewmuratov/gapwise/src/styles.css`](https://github.com/andrewmuratov/gapwise/blob/main/src/styles.css)             |
-| **Campus/API truth** | [Gapwise Platform](https://api.gapwise.ca/v1)                                                                           |
-| **OpenAPI contract** | [OpenAPI 3.1](https://api.gapwise.ca/openapi.json)                                                                      |
-| **Campus-data provenance** | [Gapwise Data](https://data.gapwise.ca)                                                                            |
-| **Developer docs**   | [docs.gapwise.ca](https://docs.gapwise.ca)                                                                              |
-| **AI/MCP boundary**  | [`andrewmuratov/gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)                                                |
-| **Operational state** | [status.gapwise.ca](https://status.gapwise.ca)                                                                         |
-| **Primary product**  | [`andrewmuratov/gapwise`](https://github.com/andrewmuratov/gapwise)                                                     |
+| Concern                    | Canonical source                                                                                                        |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Brand mark**             | [`andrewmuratov/gapwise/public/logo-mark.svg`](https://github.com/andrewmuratov/gapwise/blob/main/public/logo-mark.svg) |
+| **Visual system**          | [`andrewmuratov/gapwise/src/styles.css`](https://github.com/andrewmuratov/gapwise/blob/main/src/styles.css)             |
+| **Campus/API truth**       | [Gapwise Platform](https://api.gapwise.ca/v1)                                                                           |
+| **OpenAPI contract**       | [OpenAPI 3.1](https://api.gapwise.ca/openapi.json)                                                                      |
+| **Campus-data provenance** | [Gapwise Data](https://data.gapwise.ca)                                                                                 |
+| **Developer docs**         | [docs.gapwise.ca](https://docs.gapwise.ca)                                                                              |
+| **AI/MCP boundary**        | [`andrewmuratov/gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)                                                |
+| **Operational state**      | [status.gapwise.ca](https://status.gapwise.ca)                                                                          |
+| **Primary product**        | [`andrewmuratov/gapwise`](https://github.com/andrewmuratov/gapwise)                                                     |
 
 The checked-in file [`assets/brand/logo-mark.svg`](assets/brand/logo-mark.svg) is the official Gapwise deer mark. Do not redraw, approximate, or replace it with generated branding.
 
@@ -161,14 +161,14 @@ Physical-device QA is performed separately from static CI. The app includes non-
 
 The six first-party repositories are separate deployment/execution surfaces with one product identity, trust model, and source-of-truth hierarchy:
 
-| Repository | Role | Primary surface |
-| --- | --- | --- |
-| **[`gapwise`](https://github.com/andrewmuratov/gapwise)** | Core web/PWA product, canonical student-state behavior, deterministic UTM campus intelligence, public API, OpenAPI contract, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
-| **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** | Native iOS and Android client consuming canonical Gapwise contracts and product semantics | Native mobile app |
-| **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** | Permissioned OAuth/MCP layer for explicitly delegated student context and bounded AI actions | [ai.gapwise.ca](https://ai.gapwise.ca) |
-| **[`gapwise-data`](https://github.com/andrewmuratov/gapwise-data)** | Open campus-data, provenance, schema, validation, and reuse portal | [data.gapwise.ca](https://data.gapwise.ca) |
-| **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** | Canonical public developer documentation for the platform, SDKs, security, data, and AI/MCP integration | [docs.gapwise.ca](https://docs.gapwise.ca) |
-| **[`gapwise-status`](https://github.com/andrewmuratov/gapwise-status)** | Independent service-health monitoring and incident communication | [status.gapwise.ca](https://status.gapwise.ca) |
+| Repository                                                              | Role                                                                                                                                        | Primary surface                                                                |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **[`gapwise`](https://github.com/andrewmuratov/gapwise)**               | Core web/PWA product, canonical student-state behavior, deterministic UTM campus intelligence, public API, OpenAPI contract, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
+| **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** | Native iOS and Android client consuming canonical Gapwise contracts and product semantics                                                   | Native mobile app                                                              |
+| **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)**         | Permissioned OAuth/MCP layer for explicitly delegated student context and bounded AI actions                                                | [ai.gapwise.ca](https://ai.gapwise.ca)                                         |
+| **[`gapwise-data`](https://github.com/andrewmuratov/gapwise-data)**     | Open campus-data, provenance, schema, validation, and reuse portal                                                                          | [data.gapwise.ca](https://data.gapwise.ca)                                     |
+| **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)**     | Canonical public developer documentation for the platform, SDKs, security, data, and AI/MCP integration                                     | [docs.gapwise.ca](https://docs.gapwise.ca)                                     |
+| **[`gapwise-status`](https://github.com/andrewmuratov/gapwise-status)** | Independent service-health monitoring and incident communication                                                                           | [status.gapwise.ca](https://status.gapwise.ca)                                 |
 
 `gapwise` remains authoritative for deterministic timetable, gap, campus, routing, public API, and primary student-state semantics. Mobile consumes those contracts natively; Data explains the evidence behind campus truth; AI exposes explicitly delegated context through a separate trust boundary; Docs describes released behavior; and Status communicates operational state independently.
 
