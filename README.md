@@ -58,8 +58,8 @@ The mobile repository deliberately reuses the established Gapwise product rather
 - **Primary product:** [`andrewmuratov/gapwise`](https://github.com/andrewmuratov/gapwise)
 - **Campus/API truth:** [api.gapwise.ca/v1](https://api.gapwise.ca/v1)
 - **OpenAPI contract:** [api.gapwise.ca/openapi.json](https://api.gapwise.ca/openapi.json)
-- **Published JavaScript/TypeScript SDK:** `@gapwise/sdk@0.1.0`
-- **Published Python SDK:** `gapwise==0.1.0`
+- **Published JavaScript/TypeScript SDK:** `@gapwise/sdk@0.1.1` on npm and JSR
+- **Published Python SDK:** `gapwise==0.1.0` on PyPI
 - **Campus-data provenance:** [data.gapwise.ca](https://data.gapwise.ca)
 - **Developer docs:** [docs.gapwise.ca](https://docs.gapwise.ca)
 - **AI/MCP boundary:** [`andrewmuratov/gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)
