@@ -41,7 +41,7 @@ jobs:
       - name: Release configuration audit
         run: npm run audit:release
       - name: Production dependency security audit
-        run: npm audit --omit=dev --audit-level=high
+        run: node scripts/audit-production-dependencies.mjs
       - name: Expo Doctor
         run: npm run doctor
       - name: Bundle iOS
