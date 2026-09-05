@@ -20,10 +20,31 @@
     "status": "https://github.com/andrewmuratov/gapwise-status"
   },
   "ownership": {
-    "core": ["student-state", "deterministic-domain-logic", "routing-algorithms", "gap-planning", "map-product-ui", "public-api", "openapi", "typescript-sdk", "python-sdk"],
+    "core": [
+      "student-state",
+      "deterministic-domain-logic",
+      "routing-algorithms",
+      "gap-planning",
+      "map-product-ui",
+      "public-api",
+      "openapi",
+      "typescript-sdk",
+      "python-sdk"
+    ],
     "mobile": ["native-mobile-ux", "device-integration", "mobile-distribution"],
     "ai": ["oauth", "mcp", "delegation", "bounded-ai-actions"],
-    "data": ["canonical-public-campus-facts", "campus-geometry", "entrances", "routing-graph-data", "provenance", "schemas", "evidence", "attribution", "validation", "reuse"],
+    "data": [
+      "canonical-public-campus-facts",
+      "campus-geometry",
+      "entrances",
+      "routing-graph-data",
+      "provenance",
+      "schemas",
+      "evidence",
+      "attribution",
+      "validation",
+      "reuse"
+    ],
     "docs": ["released-developer-documentation"],
     "status": ["service-health", "incident-communication"]
   },
