@@ -56,7 +56,9 @@ function runAuditAttempt() {
 
 for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
   if (attempt > 1) {
-    console.error(`Retrying production dependency audit (${attempt}/${MAX_ATTEMPTS})...`);
+    console.error(
+      `Retrying production dependency audit (${attempt}/${MAX_ATTEMPTS})...`,
+    );
   }
 
   const result = await runAuditAttempt();
@@ -65,7 +67,8 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     process.exit(0);
   }
 
-  const isTransient = result.timedOut || transientFailurePattern.test(result.output);
+  const isTransient =
+    result.timedOut || transientFailurePattern.test(result.output);
 
   if (!isTransient) {
     console.error(
@@ -75,13 +78,19 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
   }
 
   if (result.timedOut) {
-    console.error(`Production dependency audit timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s.`);
+    console.error(
+      `Production dependency audit timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s.`,
+    );
   } else {
-    console.error("Production dependency audit hit a transient transport failure.");
+    console.error(
+      "Production dependency audit hit a transient transport failure.",
+    );
   }
 
   if (attempt === MAX_ATTEMPTS) {
-    console.error("Production dependency audit exhausted its bounded retry budget.");
+    console.error(
+      "Production dependency audit exhausted its bounded retry budget.",
+    );
     process.exit(result.exitCode);
   }
 
