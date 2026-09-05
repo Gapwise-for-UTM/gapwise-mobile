@@ -16,7 +16,7 @@
 
 Gapwise maintains two equal first-party SDK implementations in the core repository:
 
-- TypeScript `@gapwise/sdk`: version `0.1.0` is released on both npm and JSR with provenance through trusted GitHub Actions publishing. The TypeScript implementation is portable across runtime targets rather than forked into Node, Bun, and Deno packages.
+- TypeScript `@gapwise/sdk`: version `0.1.1` is released on both npm and JSR with provenance through trusted GitHub Actions publishing. The TypeScript implementation is portable across runtime targets rather than forked into Node, Bun, and Deno packages.
 - Python `gapwise==0.1.0`: released on PyPI through Trusted Publishing.
 
 The native app may keep a purpose-built mobile client layer where React Native constraints justify it, but request/response semantics, enums, uncertainty, routing states, and API behavior must match the same canonical v1 contract and both public SDKs.
