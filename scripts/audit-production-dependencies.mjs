@@ -36,7 +36,11 @@ function runAuditAttempt() {
 
     child.on("error", (error) => {
       clearTimeout(timeout);
-      resolve({ exitCode: 1, output: `${combinedOutput}\n${error.message}`, timedOut });
+      resolve({
+        exitCode: 1,
+        output: `${combinedOutput}\n${error.message}`,
+        timedOut,
+      });
     });
 
     child.on("close", (code) => {
@@ -57,7 +61,8 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     process.exit(0);
   }
 
-  const isTransient = result.timedOut || transientFailurePattern.test(result.output);
+  const isTransient =
+    result.timedOut || transientFailurePattern.test(result.output);
   if (!isTransient) {
     console.error(
       "Production dependency audit failed with a non-transient result; refusing to retry or mask it.",
@@ -66,7 +71,9 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
   }
 
   if (result.timedOut) {
-    console.error(`Production dependency audit timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s.`);
+    console.error(
+      `Production dependency audit timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s.`,
+    );
   } else {
     console.error("Production dependency audit hit a transient transport failure.");
   }
