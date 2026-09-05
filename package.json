@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "main": "expo-router/entry",
+  "homepage": "https://gapwise.ca",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gapwise-for-UTM/gapwise-mobile.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gapwise-for-UTM/gapwise-mobile/issues"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

@@ -2,9 +2,12 @@
 
 `gapwise-mobile` is the native iOS/Android client of the six-repository Gapwise ecosystem. It owns mobile UX, device integration, secure local persistence, offline/reconnect behavior, native accessibility, and app distribution. It does not own a second timetable, routing, gap-planning, campus-data, or public-API contract.
 
+All six canonical repositories are owned by the **Gapwise for UTM** GitHub organization (`Gapwise-for-UTM`). Andrew Muratov remains the creator and primary maintainer.
+
 ## Canonical dependencies
 
-- Core product/API/SDK source: `andrewmuratov/gapwise`
+- GitHub organization: `https://github.com/Gapwise-for-UTM`
+- Core product/API/SDK source: `Gapwise-for-UTM/gapwise`
 - Public API: `https://api.gapwise.ca/v1`
 - OpenAPI: `https://api.gapwise.ca/openapi.json`
 - Data/provenance: `https://data.gapwise.ca`

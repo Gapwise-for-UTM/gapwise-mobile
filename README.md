@@ -9,7 +9,7 @@
 **The native iOS and Android client for Gapwise — timetable, Today, campus intelligence, routing, gap planning, exports, and permissioned AI in a student-first mobile experience.**
 
 [![Gapwise](https://img.shields.io/badge/Gapwise-0A84FF?style=for-the-badge&logo=vercel&logoColor=white)](https://gapwise.ca)
-[![iOS + Android](https://img.shields.io/badge/iOS_%2B_Android-Native-111111?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/andrewmuratov/gapwise-mobile)
+[![iOS + Android](https://img.shields.io/badge/iOS_%2B_Android-Native-111111?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Gapwise-for-UTM/gapwise-mobile)
 [![Expo](https://img.shields.io/badge/Expo-React_Native-111111?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev)
 
 <sub>Expo · React Native · TypeScript · Expo Router · Gapwise Platform</sub>
@@ -28,7 +28,7 @@ Gapwise Mobile is the first-party native client for the Gapwise ecosystem. It br
 
 The mobile client is intentionally **not a WebView wrapper**. It is built with Expo and React Native, uses the canonical Gapwise APIs and contracts, and is designed around physical-phone use: fast launch, touch-first navigation, safe areas, offline/reconnect behavior, native sharing, secure credential storage, accessibility, and cloud-distributed builds.
 
-Gapwise Mobile is one part of a **six-repository campus-intelligence ecosystem** spanning the core web/PWA and public API, this native client, permissioned AI/MCP, open campus data and provenance, developer documentation, independent status/incident communication, and published JavaScript/TypeScript and Python SDKs from the core repository.
+Gapwise Mobile is one part of a **six-repository campus-intelligence ecosystem** spanning the core web/PWA and public API, this native client, permissioned AI/MCP, open campus data and provenance, developer documentation, independent status/incident communication, and published JavaScript/TypeScript and Python SDKs from the core repository. The canonical repositories are owned by the **Gapwise for UTM** GitHub organization (`Gapwise-for-UTM`); Andrew Muratov remains the creator and primary maintainer.
 
 The architectural rule stays the same as the main product:
 
@@ -55,17 +55,18 @@ Core functionality remains guest-first. The mobile app should be useful without 
 
 The mobile repository deliberately reuses the established Gapwise product rather than forking its semantics.
 
-- **Primary product:** [`andrewmuratov/gapwise`](https://github.com/andrewmuratov/gapwise)
+- **GitHub organization:** [Gapwise-for-UTM](https://github.com/Gapwise-for-UTM)
+- **Primary product:** [`Gapwise-for-UTM/gapwise`](https://github.com/Gapwise-for-UTM/gapwise)
 - **Campus/API truth:** [api.gapwise.ca/v1](https://api.gapwise.ca/v1)
 - **OpenAPI contract:** [api.gapwise.ca/openapi.json](https://api.gapwise.ca/openapi.json)
 - **Published JavaScript/TypeScript SDK:** `@gapwise/sdk@0.1.1` on npm and JSR
 - **Published Python SDK:** `gapwise==0.1.0` on PyPI
 - **Campus-data provenance:** [data.gapwise.ca](https://data.gapwise.ca)
 - **Developer docs:** [docs.gapwise.ca](https://docs.gapwise.ca)
-- **AI/MCP boundary:** [`andrewmuratov/gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)
+- **AI/MCP boundary:** [`Gapwise-for-UTM/gapwise-ai`](https://github.com/Gapwise-for-UTM/gapwise-ai)
 - **Operational state:** [status.gapwise.ca](https://status.gapwise.ca)
-- **Brand mark:** [`andrewmuratov/gapwise/public/logo-mark.svg`](https://github.com/andrewmuratov/gapwise/blob/main/public/logo-mark.svg)
-- **Visual system:** [`andrewmuratov/gapwise/src/styles.css`](https://github.com/andrewmuratov/gapwise/blob/main/src/styles.css)
+- **Brand mark:** [`Gapwise-for-UTM/gapwise/public/logo-mark.svg`](https://github.com/Gapwise-for-UTM/gapwise/blob/main/public/logo-mark.svg)
+- **Visual system:** [`Gapwise-for-UTM/gapwise/src/styles.css`](https://github.com/Gapwise-for-UTM/gapwise/blob/main/src/styles.css)
 
 The checked-in file [`assets/brand/logo-mark.svg`](assets/brand/logo-mark.svg) is the official Gapwise deer mark. Do not redraw, approximate, or replace it with generated branding.
 
@@ -105,7 +106,7 @@ Key rules:
 - AI integration remains explicitly permissioned and cannot silently rewrite official academic meetings;
 - private AI client support remains evidence-gated: the AI service's broad-client release checklist is not treated as complete until the real-client OAuth/read/write/revoke matrices pass.
 
-For the broader trust model, see the main Gapwise [`SECURITY.md`](https://github.com/andrewmuratov/gapwise/blob/main/SECURITY.md), [`PRIVACY.md`](https://github.com/andrewmuratov/gapwise/blob/main/PRIVACY.md), and the Gapwise AI [`SECURITY.md`](https://github.com/andrewmuratov/gapwise-ai/blob/main/SECURITY.md).
+For the broader trust model, see the main Gapwise [`SECURITY.md`](https://github.com/Gapwise-for-UTM/gapwise/blob/main/SECURITY.md), [`PRIVACY.md`](https://github.com/Gapwise-for-UTM/gapwise/blob/main/PRIVACY.md), and the Gapwise AI [`SECURITY.md`](https://github.com/Gapwise-for-UTM/gapwise-ai/blob/main/SECURITY.md).
 
 ---
 
@@ -131,7 +132,7 @@ The project uses the Expo toolchain. The checked-in EAS configuration provides d
 To run the project locally:
 
 ```bash
-git clone https://github.com/andrewmuratov/gapwise-mobile.git
+git clone https://github.com/Gapwise-for-UTM/gapwise-mobile.git
 cd gapwise-mobile
 npm install
 npx expo start
@@ -163,12 +164,12 @@ Physical-device QA is performed separately from static CI. The app includes non-
 
 The six first-party repositories are separate deployment/execution surfaces with one product identity, trust model, and source-of-truth hierarchy:
 
-- **[`gapwise`](https://github.com/andrewmuratov/gapwise)** — core web/PWA product, canonical student-state behavior, deterministic UTM campus intelligence, public API, OpenAPI contract, and published SDK source; [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1).
-- **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** — native iOS and Android client consuming canonical Gapwise contracts and product semantics.
-- **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** — permissioned OAuth/MCP layer for explicitly delegated student context and bounded AI actions; [ai.gapwise.ca](https://ai.gapwise.ca).
-- **[`gapwise-data`](https://github.com/andrewmuratov/gapwise-data)** — open campus-data, provenance, schema, validation, and reuse portal; [data.gapwise.ca](https://data.gapwise.ca).
-- **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** — canonical public developer documentation for the platform, SDKs, security, data, and AI/MCP integration; [docs.gapwise.ca](https://docs.gapwise.ca).
-- **[`gapwise-status`](https://github.com/andrewmuratov/gapwise-status)** — independent service-health monitoring and incident communication; [status.gapwise.ca](https://status.gapwise.ca).
+- **[`gapwise`](https://github.com/Gapwise-for-UTM/gapwise)** — core web/PWA product, canonical student-state behavior, deterministic UTM campus intelligence, public API, OpenAPI contract, and published SDK source; [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1).
+- **[`gapwise-mobile`](https://github.com/Gapwise-for-UTM/gapwise-mobile)** — native iOS and Android client consuming canonical Gapwise contracts and product semantics.
+- **[`gapwise-ai`](https://github.com/Gapwise-for-UTM/gapwise-ai)** — permissioned OAuth/MCP layer for explicitly delegated student context and bounded AI actions; [ai.gapwise.ca](https://ai.gapwise.ca).
+- **[`gapwise-data`](https://github.com/Gapwise-for-UTM/gapwise-data)** — open campus-data, provenance, schema, validation, and reuse portal; [data.gapwise.ca](https://data.gapwise.ca).
+- **[`gapwise-docs`](https://github.com/Gapwise-for-UTM/gapwise-docs)** — canonical public developer documentation for the platform, SDKs, security, data, and AI/MCP integration; [docs.gapwise.ca](https://docs.gapwise.ca).
+- **[`gapwise-status`](https://github.com/Gapwise-for-UTM/gapwise-status)** — independent service-health monitoring and incident communication; [status.gapwise.ca](https://status.gapwise.ca).
 
 `gapwise` remains authoritative for deterministic timetable, gap, campus, routing, public API, SDK, and primary student-state semantics. Mobile consumes those contracts natively; Data explains the evidence behind campus truth; AI exposes explicitly delegated context through a separate trust boundary; Docs describes released behavior; and Status communicates operational state independently.
 
